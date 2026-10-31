@@ -6,11 +6,11 @@ Everything runs locally on open-weight Meta models (Llama 3.2 3B by default, Lla
 
 > Track: Indie Developer (solo) - Meta Global AI Developer Hackathon, 2026
 
-<img width="1132" height="852" alt="image" src="https://github.com/user-attachments/assets/c89aff67-d589-4321-ab9d-5a23d3088e12" />
-<img width="1142" height="627" alt="image" src="https://github.com/user-attachments/assets/f0a2026f-a1a0-4137-9c64-a0feefadfc36" />
-<img width="1136" height="637" alt="image" src="https://github.com/user-attachments/assets/db526cd2-6627-4c44-85e8-5dcd743c99f4" />
+<img width="1272" height="907" alt="image" src="https://github.com/user-attachments/assets/5dd224f1-390f-4eda-b7ed-0f4749d61450" />
+<img width="1277" height="697" alt="image" src="https://github.com/user-attachments/assets/7c809b71-1733-441b-8f29-cf3c518cfbfe" />
+<img width="1277" height="706" alt="image" src="https://github.com/user-attachments/assets/e5089832-9888-4f65-bd11-b5ceb33f3537" />
 
-*Example run on preset 5 with Llama 3.2 3B; results vary between runs.*
+*Example run on preset 6 with Llama 3.2 3B; results vary between runs.*
 
 
 ## The problem
