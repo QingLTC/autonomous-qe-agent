@@ -6,27 +6,28 @@ Everything runs locally on open-weight Meta models (Llama 3.2 3B by default, Lla
 
 > Track: Indie Developer (solo) - Meta Global AI Developer Hackathon, 2026
 
+<img width="1132" height="852" alt="image" src="https://github.com/user-attachments/assets/c89aff67-d589-4321-ab9d-5a23d3088e12" />
+<img width="1142" height="627" alt="image" src="https://github.com/user-attachments/assets/f0a2026f-a1a0-4137-9c64-a0feefadfc36" />
+<img width="1136" height="637" alt="image" src="https://github.com/user-attachments/assets/db526cd2-6627-4c44-85e8-5dcd743c99f4" />
+> Example run on preset 6 with Llama 3.2 3B; results vary between runs.
+
+
 ## The problem
 
-LLM-generated tests are often wrong, and a common "self-healing" fix makes things worse: when a test fails, rewrite its assertion to whatever the code currently returns. The suite turns green and **a real bug is silently turned into "expected behaviour".**
-
-In our own measurements (Llama 3.2 3B), in every run where an injected bug was **missed**, all 78 tests whose input exposed the bug had a wrong expected value (see *Evaluation*). Naively rewriting those tests to match the code would have hidden every one of those bugs.
+LLM-generated tests are often wrong, and a common "self-healing" fix makes it worse: when a test fails, rewrite its assertion to whatever the code currently returns. The suite turns green and a real bug becomes "expected behaviour". By construction, that approach can never report a bug. This agent is built to report one.
 
 ## What it does
 
-1. **Generates** pytest tests for a Python function with Llama.
-2. **Runs** them (isolated subprocess, timeouts, coverage).
-3. **Writes a reference implementation from the docstring alone** - the model never sees the function body.
+1. **Generates** pytest tests for a Python function with Llama and runs them (isolated subprocess, timeouts, coverage).
+2. **Writes a reference implementation from the docstring alone** - the model never sees the function body.
 4. **Triages every failing test** by comparing three things in code: the source's output, the test's expectation, and the reference's output.
-   - source = reference -> the *test* was wrong -> corrected;
-   - test = reference but source differs -> **suspected source bug**, the test is left failing on purpose;
-   - all three disagree -> *needs review* (no auto-fix).
+   - source = reference: the *test* was wrong, so it is corrected;
+   - test = reference but source differs: **suspected source bug**, the test is left failing on purpose;
+   - all three disagree: *needs review*, nothing is changed automatically.
 5. **Audits the tests that pass**: a passing test can also encode a bug. If its expectation contradicts the spec-derived value, it is flagged as a *spec conflict*.
 6. **Exports a spec-aligned test suite**: conflicting tests are rewritten to the spec value, so they fail until the bug is fixed.
 
-Guardrails: crashes and negative numeric outputs are treated as bugs, not healed; outputs without numbers are never auto-corrected (they are sent to *needs review*); error-handling cases the spec does not describe are never flagged as bugs.
-
-The UI shows the Llama-written reference, a verdict table with *who decided and why*, and a side-by-side diff of every changed test.
+Every verdict shows who decided, on what evidence (the numbers involved), and the Llama-written reference is visible in the UI. When the evidence is unclear the agent says so instead of guessing: crashes and negative outputs are treated as bugs, outputs without numbers are never auto-corrected, and error cases the spec does not describe are never flagged as bugs.
 
 ## Meta models used
 
@@ -35,15 +36,13 @@ The UI shows the Llama-written reference, a verdict table with *who decided and 
 | Llama 3.2 3B (default, via Ollama) | test generation, reference implementation |
 | Llama 3.1 8B (optional, via Ollama) | same, used for the size comparison below |
 
-## Evaluation
+Both are open-weight Meta models. The endpoint is configurable (LLM_BASE_URL) for any OpenAI-compatible server.
 
-We built a small benchmark: each function has a docstring spec, a clean version and several versions with one injected bug (wrong operator, wrong coefficient, wrong rounding, shifted boundary...). Every injected bug is verified to change behaviour. We then ran the full pipeline and counted:
+## Results
 
-- **Reference accuracy** - share of test inputs on which the Llama-written reference returns the same numbers as the true (clean) function.
-- **Bugs found** - an injected bug counts only if a flagged test uses an input that really exposes it **and** that input was not already flagged on the clean version of the same run (so a wrong reference cannot get credit twice).
-- **False alarms** - clean versions that were flagged anyway.
+To measure it, each benchmark function has a docstring spec, a clean version, and versions with one injected bug (wrong operator, coefficient, rounding or boundary); every bug is checked to change behaviour. A bug counts as found only if a flagged test uses an input that really exposes it and that input was not already flagged on the clean version of the same run. A false alarm is a clean version that was flagged anyway.
 
-Main set: 7 numeric functions x (clean + 3 bugs) + 1 text-output function (clean + 2 bugs). Held-out set: 4 numeric functions x (clean + 3 bugs), **written after looking at the first results and never used for tuning**, run once at the end. 95% intervals are Wilson intervals; runs of the same bug are not independent, so treat them as optimistic.
+The **main set** (31 versions) is the one we looked at while building. The **held-out set** (16 versions) was written afterwards, never used for tuning, and run once.
 
 | | Llama 3.2 3B | Llama 3.1 8B |
 |---|---|---|
@@ -54,30 +53,24 @@ Main set: 7 numeric functions x (clean + 3 bugs) + 1 text-output function (clean
 | Reference implementation accuracy (main / held-out) | 82% / 70% | 94% / 87% |
 | Median time per analysed version | 8.6 s | 23.0 s |
 
+Samples are small and runs of the same bug are not independent, so read these as indicative (the 28% has a 95% interval of roughly 16-44%). What we take from them:
+
+- **The held-out number is the one to trust.** On the functions we had already looked at, the 3B model found 60%; on new ones, 28%.
+- **A bigger model is not automatically better.** 8B writes a more accurate reference (94% vs 82%) but found the same 60% on the main set.
+- **Misses and false alarms trace back to the small model's arithmetic at boundaries.** In the 3B main-set misses, the generated tests either never used an input that exposes the bug (12 of 25) or all such tests had a wrong expected value (the other 13); the 5 false alarms were traced to wrong reference implementations. This is why every verdict shows its evidence for a human to confirm.
+- **We explored a more sensitive rule** (also flag when test, source and reference all disagree).It finds more bugs but, with the 3B model, would have flagged 11 of 12 clean held-out versions, so we did not ship it.
+
 Raw results of every run (generated tests, reference code, flagged tests) are in `evaluation/results/`.
+``` bash
+python -m evaluation.run_eval --report evaluation/results/heldout_3b.json
+```
 
-What we learned:
+## Scope
 
-- **The numbers on the set we looked at were optimistic.** On the held-out functions the 3B model found 28% instead of 60%. Those functions are not identical in difficulty, but we report the lower number as the honest estimate.
-- **The 8B model writes a better reference (94% vs 82%) but did not improve end-to-end results** on the main set (60% in both). In the 3B main-set misses, the generated *tests* were the problem: they did not use an input that exposes the bug (12 of 25 misses) or all such tests had a wrong expected value (the other 13).
-- **False alarms are systematic, not random.** In the 3B main set all 5 were traced to a wrong reference implementation, on the same two functions (parking fee with "started hours": wrong in 3 of 3 runs; ticket price with overlapping age/student rules: 2 of 3). We did not trace the false alarms of the other runs.
-- **We explored a more sensitive rule** (also flag when test, source and reference all disagree). Replayed on the saved runs it finds more bugs, but its false-alarm cost grows quickly as the reference gets worse:
-
-  | Rule | 3B main | 8B main | 3B held-out | 8B held-out (n=4 clean) |
-  |---|---|---|---|---|
-  | shipped (precision first): bugs / false alarms | 60% / 24% | 60% / 21% | 28% / 25% | 42% / 0% |
-  | + "all three disagree": bugs / false alarms | 75% / 38% | 76% / 21% | 75% / 92% | 92% / 50% |
-
-  We did **not** ship it: with the 3B model it would flag 11 of 12 clean held-out versions.
-
-## Limitations
-
-- Needs a **docstring that states the rules**; without it only a low-confidence fallback runs.
-- Compares **numeric outputs only**. Text or boolean results cannot be checked (0 of 6 injected bugs found with 3B, 0 of 4 with 8B); where such tests fail they go to *needs review* and are never auto-corrected.
-- Small local models make arithmetic mistakes, especially at boundaries. A wrong reference causes false alarms and missed bugs, so every verdict shows its evidence for a human to confirm.
-- Designed for pure functions with simple arguments.
-- Generated code is executed in a subprocess with timeouts. This is **not a hardened sandbox**; do not run untrusted code.
-- Local demo only (no hosted instance), because the models run on your machine.
+- Works from a docstring that states the rules; without one only a low-confidence fallback runs.
+- Compares numeric results. Text or boolean outputs are never auto-corrected; they go to needs review (0 of 6 text-output bugs were found).
+- Meant for pure functions with simple arguments.
+- Generated code runs in a subprocess with timeouts. This is not a hardened sandbox, so do not run untrusted code.
 
 ## Run it
 
@@ -87,14 +80,14 @@ ollama pull llama3.2:3b            # optional: ollama pull llama3.1:8b
 streamlit run app.py
 ```
 
-Paste a function with a docstring spec, or pick a preset, and press **Run analysis**.
+Pick a preset (preset 6 is the refund example with a seeded bug) or paste a function with a docstring spec, and press **Run analysis**.
 
 Configuration (environment variables): `LLM_MODEL` (default `llama3.2:3b`), `LLM_BASE_URL` (default `http://localhost:11434/v1`), `LLM_API_KEY`, `LLM_TIMEOUT` (seconds, default 120). On Windows use `set LLM_MODEL=llama3.1:8b`.
 
 Reproduce the evaluation (model running):
 
 ```bash
-python -m evaluation.run_eval --verify-only                 # no model needed
+python -m evaluation.run_eval --verify-only                  # check the benchmark itself, no model
 python -m evaluation.run_eval --repeats 3                    # main set
 python -m evaluation.run_eval --heldout --repeats 3          # held-out set
 python -m evaluation.run_eval --model llama3.1:8b --repeats 2
@@ -105,15 +98,19 @@ python -m evaluation.run_eval --model llama3.1:8b --repeats 2
 ```
 autonomous-qe-agent
 ├── app.py                   # Streamlit UI (flow only)
+├── requirements.txt
+├── .streamlit/config.toml   # Light theme
 ├── qe_agent/
+|   ├── __init__.py
 |   ├── llm.py               # Model configuration
 |   ├── generate.py          # Test generation (+ simulated contract drift for demos)
 |   ├── sandbox.py           # Subprocess execution, pytest, coverage
 |   ├── spec.py              # Docstring spec, reference implementation, numeric comparison
 |   ├── triage.py            # Failure triage, spec audit, healing, spec-aligned export
 |   ├── ui.py                # Styling and HTML components
-|   └── presets.py           # Presets
+|   └── presets.py           # Example functions
 ├── evaluation/
+|   ├── __init__.py
 |   ├── cases.py             # Main benchmark (functions, injected bugs, probes)
 |   ├── heldout_cases.py     # Held-out benchmark
 |   └── run_eval.py          # Evaluation harness
