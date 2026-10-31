@@ -100,7 +100,10 @@ python -m evaluation.run_eval --model llama3.1:8b --repeats 2
 autonomous-qe-agent
 ├── app.py                   # Streamlit UI (flow only)
 ├── requirements.txt
-├── .streamlit/config.toml   # Light theme
+├── README.md
+├── .gitignore
+├── .streamlit/
+|   └──config.toml           # Light theme
 ├── qe_agent/
 |   ├── __init__.py
 |   ├── llm.py               # Model configuration
@@ -108,12 +111,16 @@ autonomous-qe-agent
 |   ├── sandbox.py           # Subprocess execution, pytest, coverage
 |   ├── spec.py              # Docstring spec, reference implementation, numeric comparison
 |   ├── triage.py            # Failure triage, spec audit, healing, spec-aligned export
-|   ├── ui.py                # Styling and HTML components
-|   └── presets.py           # Example functions
-├── evaluation/
-|   ├── __init__.py
-|   ├── cases.py             # Main benchmark (functions, injected bugs, probes)
-|   ├── heldout_cases.py     # Held-out benchmark
-|   └── run_eval.py          # Evaluation harness
-└──  results/                # Raw results of the runs reported above
+|   ├── presets.py           # Example functions
+|   └── ui.py                # Styling and HTML components
+└── evaluation/
+   ├── __init__.py
+   ├── cases.py             # Main benchmark (functions, injected bugs, probes)
+   ├── heldout_cases.py     # Held-out benchmark
+   ├── run_eval.py          # Evaluation harness
+   └──  results/            # Raw results of the runs reported above
+        ├── main_3b.json
+        ├── main_8b.json
+        ├── heldout_3b.json
+        └── heldout_8b.json
 ```
