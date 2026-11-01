@@ -1,0 +1,1582 @@
+[
+  {
+    "n_pass": 5,
+    "n_fail": 2,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_4",
+        "verdict": "report_bug",
+        "reason": "source returns refund=0.0, spec-derived reference returns refund=10.0",
+        "args": "10.0, 31, True"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import calculate_refund\n\ndef test_case_1():\n    result = calculate_refund(10.0, 5, False)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_2():\n    result = calculate_refund(10.0, 31, False)\n    assert result == {\"status\": \"ok\", \"refund\": 0.0}\n\ndef test_case_3():\n    result = calculate_refund(10.0, 7, True)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_4():\n    result = calculate_refund(10.0, 31, True)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_5():\n    result = calculate_refund(10.0, -1, False)\n    assert result == {\"status\": \"error\", \"refund\": 0.0}\n\ndef test_case_6():\n    result = calculate_refund(10.0, 15, False)\n    assert result == {\"status\": \"ok\", \"refund\": 5.0}\n\ndef test_case_7():\n    result = calculate_refund(10.0, 15, True)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}",
+    "reference": "def calculate_refund(price, days_since_purchase, is_defective):\n    if days_since_purchase < 0:\n        return {'status': 'error', 'refund': 0}\n    elif is_defective:\n        return {'status': 'refund', 'refund': price}\n    elif days_since_purchase <= 7:\n        return {'status': 'refund', 'refund': price}\n    elif days_since_purchase <= 14:\n        return {'status': 'refund', 'refund': price / 2}\n    else:\n        return {'status': 'refund', 'refund': 0}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "refund",
+    "variant": "clean",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 58.7
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 3,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 1,
+    "tests": "import pytest\nfrom target_module import calculate_refund\n\ndef test_case_1():\n    result = calculate_refund(10.0, 5, False)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_2():\n    result = calculate_refund(10.0, 31, False)\n    assert result == {\"status\": \"ok\", \"refund\": 0.0}\n\ndef test_case_3():\n    result = calculate_refund(10.0, 7, True)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_4():\n    result = calculate_refund(10.0, 15, True)\n    assert result == {\"status\": \"ok\", \"refund\": 15.0}\n\ndef test_case_5():\n    result = calculate_refund(10.0, -1, False)\n    assert result == {\"status\": \"error\", \"refund\": 0.0}\n\ndef test_case_6():\n    result = calculate_refund(10.0, 8, False)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_7():\n    result = calculate_refund(10.0, 15, False)\n    assert result == {\"status\": \"ok\", \"refund\": 15.0}\n\ndef test_case_8():\n    result = calculate_refund(10.0, 30, True)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}",
+    "reference": "def calculate_refund(price, days_since_purchase, is_defective):\n    if days_since_purchase < 0:\n        return {'status': 'error', 'refund': 0}\n    elif is_defective:\n        return {'status': 'refund', 'refund': price}\n    elif days_since_purchase <= 7:\n        return {'status': 'refund', 'refund': price}\n    elif days_since_purchase <= 14:\n        return {'status': 'refund', 'refund': price / 2}\n    else:\n        return {'status': 'refund', 'refund': 0}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "refund",
+    "variant": "half_becomes_150pct",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 25.8
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_7",
+        "verdict": "spec_conflict",
+        "args": "10.0, 31, True",
+        "spec_value": {
+          "status": "refund",
+          "refund": 10.0
+        },
+        "reason": "passes, but the test expects refund=0.0 while the spec-derived reference returns refund=10.0"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import calculate_refund\n\ndef test_case_1():\n    result = calculate_refund(10.0, 5, False)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_2():\n    result = calculate_refund(10.0, 31, False)\n    assert result == {\"status\": \"ok\", \"refund\": 0.0}\n\ndef test_case_3():\n    result = calculate_refund(10.0, 7, False)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_4():\n    result = calculate_refund(10.0, 13, False)\n    assert result == {\"status\": \"ok\", \"refund\": 5.0}\n\ndef test_case_5():\n    result = calculate_refund(10.0, -1, False)\n    assert result == {\"status\": \"error\", \"refund\": 0.0}\n\ndef test_case_6():\n    result = calculate_refund(10.0, 30, True)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_7():\n    result = calculate_refund(10.0, 31, True)\n    assert result == {\"status\": \"ok\", \"refund\": 0.0}",
+    "reference": "def calculate_refund(price, days_since_purchase, is_defective):\n    if days_since_purchase < 0:\n        return {'status': 'error', 'refund': 0}\n    elif is_defective:\n        return {'status': 'refund', 'refund': price}\n    elif days_since_purchase <= 7:\n        return {'status': 'refund', 'refund': price}\n    elif days_since_purchase <= 14:\n        return {'status': 'refund', 'refund': price / 2}\n    else:\n        return {'status': 'refund', 'refund': 0}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "refund",
+    "variant": "boundary_14_exclusive",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 23.6
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 4,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_6",
+        "verdict": "report_bug",
+        "reason": "source returns refund=0.0, spec-derived reference returns refund=10.0",
+        "args": "10.0, 30, True"
+      },
+      {
+        "test": "test_case_7",
+        "verdict": "report_bug",
+        "reason": "source returns refund=0.0, spec-derived reference returns refund=10.0",
+        "args": "10.0, 31, True"
+      },
+      {
+        "test": "test_case_9",
+        "verdict": "report_bug",
+        "reason": "source returns refund=0.0, spec-derived reference returns refund=10.0",
+        "args": "10.0, 21, True"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import calculate_refund\n\ndef test_case_1():\n    result = calculate_refund(10.0, 5, False)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_2():\n    result = calculate_refund(10.0, 15, False)\n    assert result == {\"status\": \"ok\", \"refund\": 5.0}\n\ndef test_case_3():\n    result = calculate_refund(10.0, 25, False)\n    assert result == {\"status\": \"ok\", \"refund\": 0.0}\n\ndef test_case_4():\n    result = calculate_refund(10.0, -5, False)\n    assert result == {\"status\": \"error\", \"refund\": 0.0}\n\ndef test_case_5():\n    result = calculate_refund(10.0, 20, True)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_6():\n    result = calculate_refund(10.0, 30, True)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_7():\n    result = calculate_refund(10.0, 31, True)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_8():\n    result = calculate_refund(10.0, 0, True)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_9():\n    result = calculate_refund(10.0, 21, True)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}",
+    "reference": "def calculate_refund(price, days_since_purchase, is_defective):\n    if days_since_purchase < 0:\n        return {'status': 'error', 'refund': 0}\n    elif is_defective:\n        return {'status': 'refund', 'refund': price}\n    elif days_since_purchase <= 7:\n        return {'status': 'refund', 'refund': price}\n    elif days_since_purchase <= 14:\n        return {'status': 'refund', 'refund': price / 2}\n    else:\n        return {'status': 'refund', 'refund': 0}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "refund",
+    "variant": "defective_window_20",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 28.2
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 3,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import calculate_refund\n\ndef test_case_1():\n    result = calculate_refund(10.0, 5, False)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_2():\n    result = calculate_refund(10.0, 31, False)\n    assert result == {\"status\": \"ok\", \"refund\": 0.0}\n\ndef test_case_3():\n    result = calculate_refund(10.0, 7, True)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_4():\n    result = calculate_refund(10.0, 15, True)\n    assert result == {\"status\": \"ok\", \"refund\": 5.0}\n\ndef test_case_5():\n    result = calculate_refund(10.0, -1, False)\n    assert result == {\"status\": \"error\", \"refund\": 0.0}\n\ndef test_case_6():\n    result = calculate_refund(10.0, 30, True)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_7():\n    result = calculate_refund(10.0, 8, False)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_8():\n    result = calculate_refund(10.0, 15, False)\n    assert result == {\"status\": \"ok\", \"refund\": 5.0}",
+    "reference": "def calculate_refund(price, days_since_purchase, is_defective):\n    if days_since_purchase < 0:\n        return {'status': 'error', 'refund': 0}\n    elif is_defective:\n        return {'status': 'refund', 'refund': price}\n    elif days_since_purchase <= 7:\n        return {'status': 'refund', 'refund': price}\n    elif days_since_purchase <= 14:\n        return {'status': 'refund', 'refund': price / 2}\n    else:\n        return {'status': 'refund', 'refund': 0}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "refund",
+    "variant": "clean",
+    "rep": 1,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 26.6
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 2,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_4",
+        "verdict": "report_bug",
+        "reason": "source returns refund=0.0, spec-derived reference returns refund=10.0",
+        "args": "10.0, 31, True"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import calculate_refund\n\ndef test_case_1():\n    result = calculate_refund(10.0, 5, False)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_2():\n    result = calculate_refund(10.0, 31, False)\n    assert result == {\"status\": \"ok\", \"refund\": 0.0}\n\ndef test_case_3():\n    result = calculate_refund(10.0, 7, True)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_4():\n    result = calculate_refund(10.0, 31, True)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_5():\n    result = calculate_refund(10.0, -1, False)\n    assert result == {\"status\": \"error\", \"refund\": 0.0}\n\ndef test_case_6():\n    result = calculate_refund(10.0, 15, False)\n    assert result == {\"status\": \"ok\", \"refund\": 15.0}\n\ndef test_case_7():\n    result = calculate_refund(10.0, 15, True)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}",
+    "reference": "def calculate_refund(price, days_since_purchase, is_defective):\n    if days_since_purchase < 0:\n        return {'status': 'error', 'refund': 0}\n    elif is_defective:\n        return {'status': 'refund', 'refund': price}\n    elif days_since_purchase <= 7:\n        return {'status': 'refund', 'refund': price}\n    elif days_since_purchase <= 14:\n        return {'status': 'refund', 'refund': price / 2}\n    else:\n        return {'status': 'refund', 'refund': 0}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "refund",
+    "variant": "half_becomes_150pct",
+    "rep": 1,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 24.0
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 2,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import calculate_refund\n\ndef test_case_1():\n    result = calculate_refund(10.0, 5, False)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_2():\n    result = calculate_refund(10.0, 31, False)\n    assert result == {\"status\": \"ok\", \"refund\": 0.0}\n\ndef test_case_3():\n    result = calculate_refund(10.0, 7, True)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_4():\n    result = calculate_refund(10.0, 15, True)\n    assert result == {\"status\": \"ok\", \"refund\": 5.0}\n\ndef test_case_5():\n    result = calculate_refund(10.0, -1, False)\n    assert result == {\"status\": \"error\", \"refund\": 0.0}\n\ndef test_case_6():\n    result = calculate_refund(10.0, 30, False)\n    assert result == {\"status\": \"ok\", \"refund\": 10.0}\n\ndef test_case_7():\n    result = calculate_refund(10.0, 31, False)\n    assert result == {\"status\": \"ok\", \"refund\": 0.0}",
+    "reference": "def calculate_refund(price, days_since_purchase, is_defective):\n    if days_since_purchase < 0:\n        return {'status': 'error', 'refund': 0}\n    elif is_defective:\n        return {'status': 'refund', 'refund': price}\n    elif days_since_purchase <= 7:\n        return {'status': 'refund', 'refund': price}\n    elif days_since_purchase <= 14:\n        return {'status': 'refund', 'refund': price / 2}\n    else:\n        return {'status': 'refund', 'refund': 0}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "refund",
+    "variant": "boundary_14_exclusive",
+    "rep": 1,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 23.0
+  },
+  {
+    "n_pass": 6,
+    "n_fail": 2,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_6",
+        "verdict": "report_bug",
+        "reason": "source returns refund=0.0, spec-derived reference returns refund=100.0",
+        "args": "100.0, 21, True"
+      },
+      {
+        "test": "test_case_8",
+        "verdict": "spec_conflict",
+        "args": "100.0, 31, True",
+        "spec_value": {
+          "status": "refund",
+          "refund": 100.0
+        },
+        "reason": "passes, but the test expects refund=0.0 while the spec-derived reference returns refund=100.0"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import calculate_refund\n\ndef test_case_1():\n    result = calculate_refund(100.0, 5, False)\n    assert result == {\"status\": \"ok\", \"refund\": 100.0}\n\ndef test_case_2():\n    result = calculate_refund(100.0, 15, False)\n    assert result == {\"status\": \"ok\", \"refund\": 50.0}\n\ndef test_case_3():\n    result = calculate_refund(100.0, 30, False)\n    assert result == {\"status\": \"ok\", \"refund\": 0.0}\n\ndef test_case_4():\n    result = calculate_refund(100.0, -5, False)\n    assert result == {\"status\": \"error\", \"refund\": 0.0}\n\ndef test_case_5():\n    result = calculate_refund(100.0, 20, True)\n    assert result == {\"status\": \"ok\", \"refund\": 100.0}\n\ndef test_case_6():\n    result = calculate_refund(100.0, 21, True)\n    assert result == {\"status\": \"ok\", \"refund\": 100.0}\n\ndef test_case_7():\n    result = calculate_refund(100.0, 8, True)\n    assert result == {\"status\": \"ok\", \"refund\": 100.0}\n\ndef test_case_8():\n    result = calculate_refund(100.0, 31, True)\n    assert result == {\"status\": \"ok\", \"refund\": 0.0}",
+    "reference": "def calculate_refund(price, days_since_purchase, is_defective):\n    if days_since_purchase < 0:\n        return {'status': 'error', 'refund': 0}\n    elif is_defective:\n        return {'status': 'refund', 'refund': price}\n    elif days_since_purchase <= 7:\n        return {'status': 'refund', 'refund': price}\n    elif days_since_purchase <= 14:\n        return {'status': 'refund', 'refund': price / 2}\n    else:\n        return {'status': 'refund', 'refund': 0}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "refund",
+    "variant": "defective_window_20",
+    "rep": 1,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 25.7
+  },
+  {
+    "n_pass": 0,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import shipping_fee\n\ndef test_case_1():\n    result = shipping_fee(0, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = shipping_fee(1, False)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_3():\n    result = shipping_fee(2, False)\n    assert result == {\"status\": \"ok\", \"fee\": 9.0}\n\ndef test_case_4():\n    result = shipping_fee(3, False)\n    assert result == {\"status\": \"ok\", \"fee\": 13.0}\n\ndef test_case_5():\n    result = shipping_fee(4, False)\n    assert result == {\"status\": \"ok\", \"fee\": 17.0}\n\ndef test_case_6():\n    result = shipping_fee(5, False)\n    assert result == {\"status\": \"ok\", \"fee\": 21.0}\n\ndef test_case_7():\n    result = shipping_fee(6, False)\n    assert result == {\"status\": \"ok\", \"fee\": 25.0}\n\ndef test_case_8():\n    result = shipping_fee(7, False)\n    assert result == {\"status\": \"ok\", \"fee\": 29.0}\n\ndef test_case_9():\n    result = shipping_fee(8, False)\n    assert result == {\"status\": \"ok\", \"fee\": 33.0}\n\ndef test_case_10():\n    result = shipping_fee(9, False)\n    assert result == {\"status\": \"ok\", \"fee\": 37.0}\n\ndef test_case_11():\n    result = shipping_fee(10, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_12():\n    result = shipping_fee(11, False)\n    assert result == {\"status\": \"ok\", \"fee\": 45.0}\n\ndef test_case_13():\n    result = shipping_fee(12, False)\n    assert result == {\"status\": \"ok\", \"fee\": 49.0}\n\ndef test_case_14():\n    result = shipping_fee(13, False)\n    assert result == {\"status\": \"ok\", \"fee\": 53.0}\n\ndef test_case_15():\n    result = shipping_fee(14, False)\n    assert result == {\"status\": \"ok\", \"fee\": 57.0}\n\ndef test_case_16():\n    result = shipping_fee(15, False)\n    assert result == {\"status\": \"ok\", \"fee\": 61.0}\n\ndef test_case_17():\n    result = shipping_fee(16, False)\n    assert result == {\"status\": \"ok\", \"fee\": 65.0}\n\ndef test_case_18():\n    result = shipping_fee(17, False)\n    assert result == {\"status\": \"ok\", \"fee\": 69.0}\n\ndef test_case_19():\n    result = shipping_fee(18, False)\n    assert result == {\"status\": \"ok\", \"fee\": 73.0}\n\ndef test_case_20():\n    result = shipping_fee(19, False)\n    assert result == {\"status\": \"ok\", \"fee\": 77.0}\n\ndef test_case_21():\n    result = shipping_fee(20, False)\n    assert result == {\"status\": \"ok\", \"fee\": 81.0}\n\ndef test_case_22():\n    result = shipping_fee(21, False)\n    assert result == {\"status\": \"ok\", \"fee\": 85.0}\n\ndef test_case_23():\n    result = shipping_fee(22, False)\n    assert result == {\"status\": \"ok\", \"fee\": 89.0}\n\ndef test_case_24():\n    result = shipping_fee(23, False)\n    assert result == {\"status\": \"ok\", \"fee\": 93.0}\n\ndef test_case_25():\n    result = shipping_fee(24, False)\n    assert result == {\"status\": \"ok\", \"fee\": 97.0}\n\ndef test_case_26():\n    result = shipping_fee(25, False)\n    assert result == {\"status\": \"ok\", \"fee\": 101.0}\n\ndef test_case_27():\n    result = shipping_fee(26, False)\n    assert result == {\"status\": \"ok\", \"fee\": 105.0}\n\ndef test_case_28():\n    result = shipping_fee(27, False)\n    assert result == {\"status\": \"ok\", \"fee\": 109.0}\n\ndef test_case_29():\n    result = shipping_fee(28, False)\n    assert result == {\"status\": \"ok\", \"fee\": 113.0}\n\ndef test_case_30():\n    result = shipping_fee(29, False)\n    assert result == {\"status\": \"ok\", \"fee\": 117.0}\n\ndef test_case_31():\n    result = shipping_fee(30, False)\n    assert result == {\"status\": \"ok\", \"fee\": 121.0}\n\ndef test_case_32():\n    result = shipping_fee(31, False)\n    assert result == {\"status\": \"ok\", \"fee\": 125.0}\n\ndef test_case_33():\n    result = shipping_fee(32, False)\n    assert result == {\"status\": \"ok\", \"fee\": 129.0}\n\ndef test_case_34():\n    result = shipping_fee(33, False)\n    assert result == {\"status\": \"ok\", \"fee\": 133.0}\n\ndef test_case_35():\n    result = shipping_fee(34, False)\n    assert result == {\"status\": \"ok\", \"fee\": 137.0}\n\ndef test_case_36():\n    result = shipping_fee(35, False)\n    assert result == {\"status\": \"ok\", \"fee\": 141.0}\n\ndef test_case_37():\n    result = shipping_fee(36, False)\n    assert result == {\"status\": \"ok\", \"fee\": 145.0}\n\ndef test_case_38():\n    result = shipping_fee(37, False)\n    assert result == {\"status\": \"ok\", \"fee\": 149.0}\n\ndef test_case_39():\n    result = shipping_fee(38, False)\n    assert result == {\"status\": \"ok\", \"fee\": 153.0}\n\ndef test_case_40():\n    result = shipping_fee(39, False)\n    assert result == {\"status\": \"ok\", \"fee\": 157.0}\n\ndef test_case_41():\n    result = shipping_fee(40, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_42():\n    result = shipping_fee(41, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_43():\n    result = shipping_fee(42, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_44():\n    result = shipping_fee(43, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_45():\n    result = shipping_fee(44, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_46():\n    result = shipping_fee(45, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_47():\n    result = shipping_fee(46, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_48():\n    result = shipping_fee(47, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_49():\n    result = shipping_fee(48, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_50():\n    result = shipping_fee(49, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_51():\n    result = shipping_fee(50, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_52():\n    result = shipping_fee(51, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_53():\n    result = shipping_fee(52, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_54():\n    result = shipping_fee(53, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_55():\n    result = shipping_fee(54, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_56():\n    result = shipping_fee(55, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_57():\n    result = shipping_fee(56, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_58():\n    result = shipping_fee(57, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_59():\n    result = shipping_fee(58, False",
+    "reference": "def shipping_fee(weight_kg, is_express):\n    if weight_kg <= 0:\n        return {'status': 'error', 'fee': 0.0}\n    \n    base_fee = 5.0\n    additional_fee = (weight_kg - 1) * 2.0\n    total_fee = base_fee + additional_fee\n    \n    if is_express:\n        total_fee *= 1.5\n    \n    total_fee = min(total_fee, 40.0)\n    \n    return {'status': 'ok', 'fee': total_fee}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "shipping",
+    "variant": "clean",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 121.5
+  },
+  {
+    "n_pass": 3,
+    "n_fail": 7,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_8",
+        "verdict": "report_bug",
+        "reason": "source returns fee=83.0, spec-derived reference returns fee=40.0",
+        "args": "40, False"
+      },
+      {
+        "test": "test_case_9",
+        "verdict": "report_bug",
+        "reason": "source returns fee=85.0, spec-derived reference returns fee=40.0",
+        "args": "41, False"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import shipping_fee\n\ndef test_case_1():\n    result = shipping_fee(0, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = shipping_fee(1, False)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_3():\n    result = shipping_fee(2, False)\n    assert result == {\"status\": \"ok\", \"fee\": 9.0}\n\ndef test_case_4():\n    result = shipping_fee(3, False)\n    assert result == {\"status\": \"ok\", \"fee\": 13.0}\n\ndef test_case_5():\n    result = shipping_fee(10, False)\n    assert result == {\"status\": \"ok\", \"fee\": 25.0}\n\ndef test_case_6():\n    result = shipping_fee(10, True)\n    assert result == {\"status\": \"ok\", \"fee\": 37.5}\n\ndef test_case_7():\n    result = shipping_fee(10, True)\n    assert result == {\"status\": \"ok\", \"fee\": 37.5}\n\ndef test_case_8():\n    result = shipping_fee(40, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_9():\n    result = shipping_fee(41, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_10():\n    result = shipping_fee(-1, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}",
+    "reference": "def shipping_fee(weight_kg, is_express):\n    if weight_kg <= 0:\n        return {'status': 'error', 'fee': 0}\n    \n    base_fee = 5.0\n    additional_fee = (weight_kg - 1) * 2.0\n    total_fee = base_fee + additional_fee\n    \n    if is_express:\n        total_fee *= 1.5\n    \n    total_fee = min(total_fee, 40.0)\n    \n    return {'status': 'ok', 'fee': total_fee}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "shipping",
+    "variant": "cap_400",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 26.7
+  },
+  {
+    "n_pass": 0,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import shipping_fee\n\ndef test_case_1():\n    result = shipping_fee(0, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = shipping_fee(1, False)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_3():\n    result = shipping_fee(2, False)\n    assert result == {\"status\": \"ok\", \"fee\": 9.0}\n\ndef test_case_4():\n    result = shipping_fee(3, False)\n    assert result == {\"status\": \"ok\", \"fee\": 13.0}\n\ndef test_case_5():\n    result = shipping_fee(4, False)\n    assert result == {\"status\": \"ok\", \"fee\": 17.0}\n\ndef test_case_6():\n    result = shipping_fee(5, False)\n    assert result == {\"status\": \"ok\", \"fee\": 21.0}\n\ndef test_case_7():\n    result = shipping_fee(6, False)\n    assert result == {\"status\": \"ok\", \"fee\": 25.0}\n\ndef test_case_8():\n    result = shipping_fee(7, False)\n    assert result == {\"status\": \"ok\", \"fee\": 29.0}\n\ndef test_case_9():\n    result = shipping_fee(8, False)\n    assert result == {\"status\": \"ok\", \"fee\": 33.0}\n\ndef test_case_10():\n    result = shipping_fee(9, False)\n    assert result == {\"status\": \"ok\", \"fee\": 37.0}\n\ndef test_case_11():\n    result = shipping_fee(10, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_12():\n    result = shipping_fee(11, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_13():\n    result = shipping_fee(12, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_14():\n    result = shipping_fee(13, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_15():\n    result = shipping_fee(14, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_16():\n    result = shipping_fee(15, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_17():\n    result = shipping_fee(16, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_18():\n    result = shipping_fee(17, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_19():\n    result = shipping_fee(18, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_20():\n    result = shipping_fee(19, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_21():\n    result = shipping_fee(20, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_22():\n    result = shipping_fee(21, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_23():\n    result = shipping_fee(22, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_24():\n    result = shipping_fee(23, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_25():\n    result = shipping_fee(24, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_26():\n    result = shipping_fee(25, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_27():\n    result = shipping_fee(26, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_28():\n    result = shipping_fee(27, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_29():\n    result = shipping_fee(28, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_30():\n    result = shipping_fee(29, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_31():\n    result = shipping_fee(30, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_32():\n    result = shipping_fee(31, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_33():\n    result = shipping_fee(32, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_34():\n    result = shipping_fee(33, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_35():\n    result = shipping_fee(34, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_36():\n    result = shipping_fee(35, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_37():\n    result = shipping_fee(36, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_38():\n    result = shipping_fee(37, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_39():\n    result = shipping_fee(38, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_40():\n    result = shipping_fee(39, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_41():\n    result = shipping_fee(40, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_42():\n    result = shipping_fee(41, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_43():\n    result = shipping_fee(42, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_44():\n    result = shipping_fee(43, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_45():\n    result = shipping_fee(44, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_46():\n    result = shipping_fee(45, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_47():\n    result = shipping_fee(46, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_48():\n    result = shipping_fee(47, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_49():\n    result = shipping_fee(48, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_50():\n    result = shipping_fee(49, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_51():\n    result = shipping_fee(50, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_52():\n    result = shipping_fee(51, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_53():\n    result = shipping_fee(52, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_54():\n    result = shipping_fee(53, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_55():\n    result = shipping_fee(54, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_56():\n    result = shipping_fee(55, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_57():\n    result = shipping_fee(56, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_58():\n    result = shipping_fee(57, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_59():\n    result = shipping_fee(58, False",
+    "reference": "def shipping_fee(weight_kg, is_express):\n    if weight_kg <= 0:\n        return {'status': 'error', 'fee': 0}\n    \n    base_fee = 5.0\n    additional_fee = (weight_kg - 1) * 2.0\n    total_fee = base_fee + additional_fee\n    \n    if is_express:\n        total_fee *= 1.5\n    \n    total_fee = min(total_fee, 40.0)\n    \n    return {'status': 'ok', 'fee': total_fee}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "shipping",
+    "variant": "express_1_2x",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 125.7
+  },
+  {
+    "n_pass": 0,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import shipping_fee\n\ndef test_case_1():\n    result = shipping_fee(0, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = shipping_fee(1, False)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_3():\n    result = shipping_fee(2, False)\n    assert result == {\"status\": \"ok\", \"fee\": 9.0}\n\ndef test_case_4():\n    result = shipping_fee(3, False)\n    assert result == {\"status\": \"ok\", \"fee\": 13.0}\n\ndef test_case_5():\n    result = shipping_fee(4, False)\n    assert result == {\"status\": \"ok\", \"fee\": 17.0}\n\ndef test_case_6():\n    result = shipping_fee(5, False)\n    assert result == {\"status\": \"ok\", \"fee\": 21.0}\n\ndef test_case_7():\n    result = shipping_fee(6, False)\n    assert result == {\"status\": \"ok\", \"fee\": 25.0}\n\ndef test_case_8():\n    result = shipping_fee(7, False)\n    assert result == {\"status\": \"ok\", \"fee\": 29.0}\n\ndef test_case_9():\n    result = shipping_fee(8, False)\n    assert result == {\"status\": \"ok\", \"fee\": 33.0}\n\ndef test_case_10():\n    result = shipping_fee(9, False)\n    assert result == {\"status\": \"ok\", \"fee\": 37.0}\n\ndef test_case_11():\n    result = shipping_fee(10, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_12():\n    result = shipping_fee(11, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_13():\n    result = shipping_fee(12, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_14():\n    result = shipping_fee(13, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_15():\n    result = shipping_fee(14, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_16():\n    result = shipping_fee(15, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_17():\n    result = shipping_fee(16, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_18():\n    result = shipping_fee(17, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_19():\n    result = shipping_fee(18, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_20():\n    result = shipping_fee(19, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_21():\n    result = shipping_fee(20, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_22():\n    result = shipping_fee(21, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_23():\n    result = shipping_fee(22, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_24():\n    result = shipping_fee(23, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_25():\n    result = shipping_fee(24, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_26():\n    result = shipping_fee(25, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_27():\n    result = shipping_fee(26, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_28():\n    result = shipping_fee(27, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_29():\n    result = shipping_fee(28, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_30():\n    result = shipping_fee(29, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_31():\n    result = shipping_fee(30, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_32():\n    result = shipping_fee(31, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_33():\n    result = shipping_fee(32, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_34():\n    result = shipping_fee(33, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_35():\n    result = shipping_fee(34, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_36():\n    result = shipping_fee(35, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_37():\n    result = shipping_fee(36, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_38():\n    result = shipping_fee(37, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_39():\n    result = shipping_fee(38, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_40():\n    result = shipping_fee(39, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_41():\n    result = shipping_fee(40, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_42():\n    result = shipping_fee(41, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_43():\n    result = shipping_fee(42, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_44():\n    result = shipping_fee(43, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_45():\n    result = shipping_fee(44, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_46():\n    result = shipping_fee(45, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_47():\n    result = shipping_fee(46, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_48():\n    result = shipping_fee(47, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_49():\n    result = shipping_fee(48, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_50():\n    result = shipping_fee(49, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_51():\n    result = shipping_fee(50, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_52():\n    result = shipping_fee(51, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_53():\n    result = shipping_fee(52, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_54():\n    result = shipping_fee(53, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_55():\n    result = shipping_fee(54, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_56():\n    result = shipping_fee(55, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_57():\n    result = shipping_fee(56, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_58():\n    result = shipping_fee(57, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_59():\n    result = shipping_fee(58, False",
+    "reference": "def shipping_fee(weight_kg, is_express):\n    if weight_kg <= 0:\n        return {'status': 'error', 'fee': 0}\n    \n    base_fee = 5.0\n    additional_fee = (weight_kg - 1) * 2.0\n    total_fee = base_fee + additional_fee\n    \n    if is_express:\n        total_fee *= 1.5\n    \n    total_fee = min(total_fee, 40.0)\n    \n    return {'status': 'ok', 'fee': total_fee}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "shipping",
+    "variant": "floor_not_ceil",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 119.6
+  },
+  {
+    "n_pass": 0,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import shipping_fee\n\ndef test_case_1():\n    result = shipping_fee(0, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = shipping_fee(1, False)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_3():\n    result = shipping_fee(2, False)\n    assert result == {\"status\": \"ok\", \"fee\": 9.0}\n\ndef test_case_4():\n    result = shipping_fee(3, False)\n    assert result == {\"status\": \"ok\", \"fee\": 13.0}\n\ndef test_case_5():\n    result = shipping_fee(4, False)\n    assert result == {\"status\": \"ok\", \"fee\": 17.0}\n\ndef test_case_6():\n    result = shipping_fee(5, False)\n    assert result == {\"status\": \"ok\", \"fee\": 21.0}\n\ndef test_case_7():\n    result = shipping_fee(6, False)\n    assert result == {\"status\": \"ok\", \"fee\": 25.0}\n\ndef test_case_8():\n    result = shipping_fee(7, False)\n    assert result == {\"status\": \"ok\", \"fee\": 29.0}\n\ndef test_case_9():\n    result = shipping_fee(8, False)\n    assert result == {\"status\": \"ok\", \"fee\": 33.0}\n\ndef test_case_10():\n    result = shipping_fee(9, False)\n    assert result == {\"status\": \"ok\", \"fee\": 37.0}\n\ndef test_case_11():\n    result = shipping_fee(10, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_12():\n    result = shipping_fee(11, False)\n    assert result == {\"status\": \"ok\", \"fee\": 45.0}\n\ndef test_case_13():\n    result = shipping_fee(12, False)\n    assert result == {\"status\": \"ok\", \"fee\": 49.0}\n\ndef test_case_14():\n    result = shipping_fee(13, False)\n    assert result == {\"status\": \"ok\", \"fee\": 53.0}\n\ndef test_case_15():\n    result = shipping_fee(14, False)\n    assert result == {\"status\": \"ok\", \"fee\": 57.0}\n\ndef test_case_16():\n    result = shipping_fee(15, False)\n    assert result == {\"status\": \"ok\", \"fee\": 61.0}\n\ndef test_case_17():\n    result = shipping_fee(16, False)\n    assert result == {\"status\": \"ok\", \"fee\": 65.0}\n\ndef test_case_18():\n    result = shipping_fee(17, False)\n    assert result == {\"status\": \"ok\", \"fee\": 69.0}\n\ndef test_case_19():\n    result = shipping_fee(18, False)\n    assert result == {\"status\": \"ok\", \"fee\": 73.0}\n\ndef test_case_20():\n    result = shipping_fee(19, False)\n    assert result == {\"status\": \"ok\", \"fee\": 77.0}\n\ndef test_case_21():\n    result = shipping_fee(20, False)\n    assert result == {\"status\": \"ok\", \"fee\": 81.0}\n\ndef test_case_22():\n    result = shipping_fee(21, False)\n    assert result == {\"status\": \"ok\", \"fee\": 85.0}\n\ndef test_case_23():\n    result = shipping_fee(22, False)\n    assert result == {\"status\": \"ok\", \"fee\": 89.0}\n\ndef test_case_24():\n    result = shipping_fee(23, False)\n    assert result == {\"status\": \"ok\", \"fee\": 93.0}\n\ndef test_case_25():\n    result = shipping_fee(24, False)\n    assert result == {\"status\": \"ok\", \"fee\": 97.0}\n\ndef test_case_26():\n    result = shipping_fee(25, False)\n    assert result == {\"status\": \"ok\", \"fee\": 101.0}\n\ndef test_case_27():\n    result = shipping_fee(26, False)\n    assert result == {\"status\": \"ok\", \"fee\": 105.0}\n\ndef test_case_28():\n    result = shipping_fee(27, False)\n    assert result == {\"status\": \"ok\", \"fee\": 109.0}\n\ndef test_case_29():\n    result = shipping_fee(28, False)\n    assert result == {\"status\": \"ok\", \"fee\": 113.0}\n\ndef test_case_30():\n    result = shipping_fee(29, False)\n    assert result == {\"status\": \"ok\", \"fee\": 117.0}\n\ndef test_case_31():\n    result = shipping_fee(30, False)\n    assert result == {\"status\": \"ok\", \"fee\": 121.0}\n\ndef test_case_32():\n    result = shipping_fee(31, False)\n    assert result == {\"status\": \"ok\", \"fee\": 125.0}\n\ndef test_case_33():\n    result = shipping_fee(32, False)\n    assert result == {\"status\": \"ok\", \"fee\": 129.0}\n\ndef test_case_34():\n    result = shipping_fee(33, False)\n    assert result == {\"status\": \"ok\", \"fee\": 133.0}\n\ndef test_case_35():\n    result = shipping_fee(34, False)\n    assert result == {\"status\": \"ok\", \"fee\": 137.0}\n\ndef test_case_36():\n    result = shipping_fee(35, False)\n    assert result == {\"status\": \"ok\", \"fee\": 141.0}\n\ndef test_case_37():\n    result = shipping_fee(36, False)\n    assert result == {\"status\": \"ok\", \"fee\": 145.0}\n\ndef test_case_38():\n    result = shipping_fee(37, False)\n    assert result == {\"status\": \"ok\", \"fee\": 149.0}\n\ndef test_case_39():\n    result = shipping_fee(38, False)\n    assert result == {\"status\": \"ok\", \"fee\": 153.0}\n\ndef test_case_40():\n    result = shipping_fee(39, False)\n    assert result == {\"status\": \"ok\", \"fee\": 157.0}\n\ndef test_case_41():\n    result = shipping_fee(40, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_42():\n    result = shipping_fee(41, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_43():\n    result = shipping_fee(42, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_44():\n    result = shipping_fee(43, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_45():\n    result = shipping_fee(44, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_46():\n    result = shipping_fee(45, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_47():\n    result = shipping_fee(46, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_48():\n    result = shipping_fee(47, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_49():\n    result = shipping_fee(48, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_50():\n    result = shipping_fee(49, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_51():\n    result = shipping_fee(50, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_52():\n    result = shipping_fee(51, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_53():\n    result = shipping_fee(52, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_54():\n    result = shipping_fee(53, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_55():\n    result = shipping_fee(54, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_56():\n    result = shipping_fee(55, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_57():\n    result = shipping_fee(56, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_58():\n    result = shipping_fee(57, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_59():\n    result = shipping_fee(58, False",
+    "reference": "def shipping_fee(weight_kg, is_express):\n    if weight_kg <= 0:\n        return {'status': 'error', 'fee': 0}\n    \n    base_fee = 5.0\n    additional_fee = (weight_kg - 1) * 2.0\n    total_fee = base_fee + additional_fee\n    \n    if is_express:\n        total_fee *= 1.5\n    \n    total_fee = min(total_fee, 40.0)\n    \n    return {'status': 'ok', 'fee': total_fee}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "shipping",
+    "variant": "clean",
+    "rep": 1,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 124.0
+  },
+  {
+    "n_pass": 4,
+    "n_fail": 6,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_8",
+        "verdict": "report_bug",
+        "reason": "source returns fee=85.0, spec-derived reference returns fee=40.0",
+        "args": "41, False"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import shipping_fee\n\ndef test_case_1():\n    result = shipping_fee(0, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = shipping_fee(1, False)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_3():\n    result = shipping_fee(2, False)\n    assert result == {\"status\": \"ok\", \"fee\": 9.0}\n\ndef test_case_4():\n    result = shipping_fee(3, False)\n    assert result == {\"status\": \"ok\", \"fee\": 13.0}\n\ndef test_case_5():\n    result = shipping_fee(10, False)\n    assert result == {\"status\": \"ok\", \"fee\": 25.0}\n\ndef test_case_6():\n    result = shipping_fee(10, True)\n    assert result == {\"status\": \"ok\", \"fee\": 37.5}\n\ndef test_case_7():\n    result = shipping_fee(10, True)\n    assert result == {\"status\": \"ok\", \"fee\": 37.5}\n\ndef test_case_8():\n    result = shipping_fee(41, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_9():\n    result = shipping_fee(-1, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_10():\n    result = shipping_fee(-1, True)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}",
+    "reference": "def shipping_fee(weight_kg, is_express):\n    if weight_kg <= 0:\n        return {'status': 'error', 'fee': 0}\n    \n    base_fee = 5.0\n    additional_fee = (weight_kg - 1) * 2.0\n    total_fee = base_fee + additional_fee\n    \n    if is_express:\n        total_fee *= 1.5\n    \n    total_fee = min(total_fee, 40.0)\n    \n    return {'status': 'ok', 'fee': total_fee}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "shipping",
+    "variant": "cap_400",
+    "rep": 1,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 29.9
+  },
+  {
+    "n_pass": 25,
+    "n_fail": 17,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_23",
+        "verdict": "report_bug",
+        "reason": "source returns fee=6.0, spec-derived reference returns fee=7.5",
+        "args": "1, True"
+      }
+    ],
+    "needs_review": 14,
+    "tests": "import pytest\nfrom target_module import shipping_fee\n\ndef test_case_1():\n    result = shipping_fee(0, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = shipping_fee(1, False)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_3():\n    result = shipping_fee(2, False)\n    assert result == {\"status\": \"ok\", \"fee\": 7.0}\n\ndef test_case_4():\n    result = shipping_fee(3, False)\n    assert result == {\"status\": \"ok\", \"fee\": 9.0}\n\ndef test_case_5():\n    result = shipping_fee(4, False)\n    assert result == {\"status\": \"ok\", \"fee\": 11.0}\n\ndef test_case_6():\n    result = shipping_fee(5, False)\n    assert result == {\"status\": \"ok\", \"fee\": 13.0}\n\ndef test_case_7():\n    result = shipping_fee(6, False)\n    assert result == {\"status\": \"ok\", \"fee\": 15.0}\n\ndef test_case_8():\n    result = shipping_fee(7, False)\n    assert result == {\"status\": \"ok\", \"fee\": 17.0}\n\ndef test_case_9():\n    result = shipping_fee(8, False)\n    assert result == {\"status\": \"ok\", \"fee\": 19.0}\n\ndef test_case_10():\n    result = shipping_fee(9, False)\n    assert result == {\"status\": \"ok\", \"fee\": 21.0}\n\ndef test_case_11():\n    result = shipping_fee(10, False)\n    assert result == {\"status\": \"ok\", \"fee\": 23.0}\n\ndef test_case_12():\n    result = shipping_fee(11, False)\n    assert result == {\"status\": \"ok\", \"fee\": 25.0}\n\ndef test_case_13():\n    result = shipping_fee(12, False)\n    assert result == {\"status\": \"ok\", \"fee\": 27.0}\n\ndef test_case_14():\n    result = shipping_fee(13, False)\n    assert result == {\"status\": \"ok\", \"fee\": 29.0}\n\ndef test_case_15():\n    result = shipping_fee(14, False)\n    assert result == {\"status\": \"ok\", \"fee\": 31.0}\n\ndef test_case_16():\n    result = shipping_fee(15, False)\n    assert result == {\"status\": \"ok\", \"fee\": 33.0}\n\ndef test_case_17():\n    result = shipping_fee(16, False)\n    assert result == {\"status\": \"ok\", \"fee\": 35.0}\n\ndef test_case_18():\n    result = shipping_fee(17, False)\n    assert result == {\"status\": \"ok\", \"fee\": 37.0}\n\ndef test_case_19():\n    result = shipping_fee(18, False)\n    assert result == {\"status\": \"ok\", \"fee\": 39.0}\n\ndef test_case_20():\n    result = shipping_fee(19, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_21():\n    result = shipping_fee(20, False)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_22():\n    result = shipping_fee(0, True)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_23():\n    result = shipping_fee(1, True)\n    assert result == {\"status\": \"ok\", \"fee\": 7.5}\n\ndef test_case_24():\n    result = shipping_fee(2, True)\n    assert result == {\"status\": \"ok\", \"fee\": 9.5}\n\ndef test_case_25():\n    result = shipping_fee(3, True)\n    assert result == {\"status\": \"ok\", \"fee\": 11.5}\n\ndef test_case_26():\n    result = shipping_fee(4, True)\n    assert result == {\"status\": \"ok\", \"fee\": 13.5}\n\ndef test_case_27():\n    result = shipping_fee(5, True)\n    assert result == {\"status\": \"ok\", \"fee\": 15.5}\n\ndef test_case_28():\n    result = shipping_fee(6, True)\n    assert result == {\"status\": \"ok\", \"fee\": 17.5}\n\ndef test_case_29():\n    result = shipping_fee(7, True)\n    assert result == {\"status\": \"ok\", \"fee\": 19.5}\n\ndef test_case_30():\n    result = shipping_fee(8, True)\n    assert result == {\"status\": \"ok\", \"fee\": 21.5}\n\ndef test_case_31():\n    result = shipping_fee(9, True)\n    assert result == {\"status\": \"ok\", \"fee\": 23.5}\n\ndef test_case_32():\n    result = shipping_fee(10, True)\n    assert result == {\"status\": \"ok\", \"fee\": 25.5}\n\ndef test_case_33():\n    result = shipping_fee(11, True)\n    assert result == {\"status\": \"ok\", \"fee\": 27.5}\n\ndef test_case_34():\n    result = shipping_fee(12, True)\n    assert result == {\"status\": \"ok\", \"fee\": 29.5}\n\ndef test_case_35():\n    result = shipping_fee(13, True)\n    assert result == {\"status\": \"ok\", \"fee\": 31.5}\n\ndef test_case_36():\n    result = shipping_fee(14, True)\n    assert result == {\"status\": \"ok\", \"fee\": 33.5}\n\ndef test_case_37():\n    result = shipping_fee(15, True)\n    assert result == {\"status\": \"ok\", \"fee\": 35.5}\n\ndef test_case_38():\n    result = shipping_fee(16, True)\n    assert result == {\"status\": \"ok\", \"fee\": 37.5}\n\ndef test_case_39():\n    result = shipping_fee(17, True)\n    assert result == {\"status\": \"ok\", \"fee\": 39.5}\n\ndef test_case_40():\n    result = shipping_fee(18, True)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_41():\n    result = shipping_fee(19, True)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}\n\ndef test_case_42():\n    result = shipping_fee(20, True)\n    assert result == {\"status\": \"ok\", \"fee\": 40.0}",
+    "reference": "def shipping_fee(weight_kg, is_express):\n    if weight_kg <= 0:\n        return {'status': 'error', 'fee': 0}\n    \n    base_fee = 5.0\n    additional_fee = (weight_kg - 1) * 2.0\n    total_fee = base_fee + additional_fee\n    \n    if is_express:\n        total_fee *= 1.5\n    \n    total_fee = min(total_fee, 40.0)\n    \n    return {'status': 'ok', 'fee': total_fee}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "shipping",
+    "variant": "express_1_2x",
+    "rep": 1,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 99.2
+  },
+  {
+    "n_pass": 0,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import shipping_fee\n\ndef test_case_1():\n    result = shipping_fee(0, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = shipping_fee(1, False)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_3():\n    result = shipping_fee(2, False)\n    assert result == {\"status\": \"ok\", \"fee\": 9.0}\n\ndef test_case_4():\n    result = shipping_fee(3, False)\n    assert result == {\"status\": \"ok\", \"fee\": 13.0}\n\ndef test_case_5():\n    result = shipping_fee(4, False)\n    assert result == {\"status\": \"ok\", \"fee\": 17.0}\n\ndef test_case_6():\n    result = shipping_fee(5, False)\n    assert result == {\"status\": \"ok\", \"fee\": 21.0}\n\ndef test_case_7():\n    result = shipping_fee(6, False)\n    assert result == {\"status\": \"ok\", \"fee\": 25.0}\n\ndef test_case_8():\n    result = shipping_fee(7, False)\n    assert result == {\"status\": \"ok\", \"fee\": 29.0}\n\ndef test_case_9():\n    result = shipping_fee(8, False)\n    assert result == {\"status\": \"ok\", \"fee\": 33.0}\n\ndef test_case_10():\n    result = shipping_fee(9, False)\n    assert result == {\"status\": \"ok\", \"fee\": 37.0}\n\ndef test_case_11():\n    result = shipping_fee(10, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_12():\n    result = shipping_fee(11, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_13():\n    result = shipping_fee(12, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_14():\n    result = shipping_fee(13, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_15():\n    result = shipping_fee(14, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_16():\n    result = shipping_fee(15, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_17():\n    result = shipping_fee(16, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_18():\n    result = shipping_fee(17, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_19():\n    result = shipping_fee(18, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_20():\n    result = shipping_fee(19, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_21():\n    result = shipping_fee(20, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_22():\n    result = shipping_fee(21, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_23():\n    result = shipping_fee(22, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_24():\n    result = shipping_fee(23, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_25():\n    result = shipping_fee(24, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_26():\n    result = shipping_fee(25, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_27():\n    result = shipping_fee(26, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_28():\n    result = shipping_fee(27, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_29():\n    result = shipping_fee(28, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_30():\n    result = shipping_fee(29, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_31():\n    result = shipping_fee(30, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_32():\n    result = shipping_fee(31, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_33():\n    result = shipping_fee(32, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_34():\n    result = shipping_fee(33, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_35():\n    result = shipping_fee(34, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_36():\n    result = shipping_fee(35, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_37():\n    result = shipping_fee(36, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_38():\n    result = shipping_fee(37, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_39():\n    result = shipping_fee(38, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_40():\n    result = shipping_fee(39, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_41():\n    result = shipping_fee(40, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_42():\n    result = shipping_fee(41, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_43():\n    result = shipping_fee(42, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_44():\n    result = shipping_fee(43, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_45():\n    result = shipping_fee(44, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_46():\n    result = shipping_fee(45, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_47():\n    result = shipping_fee(46, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_48():\n    result = shipping_fee(47, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_49():\n    result = shipping_fee(48, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_50():\n    result = shipping_fee(49, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_51():\n    result = shipping_fee(50, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_52():\n    result = shipping_fee(51, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_53():\n    result = shipping_fee(52, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_54():\n    result = shipping_fee(53, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_55():\n    result = shipping_fee(54, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_56():\n    result = shipping_fee(55, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_57():\n    result = shipping_fee(56, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_58():\n    result = shipping_fee(57, False)\n    assert result == {\"status\": \"ok\", \"fee\": 41.0}\n\ndef test_case_59():\n    result = shipping_fee(58, False",
+    "reference": "def shipping_fee(weight_kg, is_express):\n    if weight_kg <= 0:\n        return {'status': 'error', 'fee': 0}\n    \n    base_fee = 5.0\n    additional_fee = (weight_kg - 1) * 2.0\n    total_fee = base_fee + additional_fee\n    \n    if is_express:\n        total_fee *= 1.5\n    \n    total_fee = min(total_fee, 40.0)\n    \n    return {'status': 'ok', 'fee': total_fee}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "shipping",
+    "variant": "floor_not_ceil",
+    "rep": 1,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 124.4
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 4,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import late_fee\n\ndef test_case_1():\n    result = late_fee(0, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = late_fee(3, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_3():\n    result = late_fee(4, False)\n    assert result == {\"status\": \"ok\", \"fee\": 1.0}\n\ndef test_case_4():\n    result = late_fee(10, False)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_5():\n    result = late_fee(-1, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_6():\n    result = late_fee(0, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_7():\n    result = late_fee(3, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_8():\n    result = late_fee(4, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.5}\n\ndef test_case_9():\n    result = late_fee(10, True)\n    assert result == {\"status\": \"ok\", \"fee\": 2.5}",
+    "reference": "def late_fee(days_late, is_member):\n    if days_late < 0:\n        return {'status': 'error', 'fee': 0.0}\n    elif days_late <= 3:\n        return {'status': 'free', 'fee': 0.0}\n    else:\n        fee = min(days_late - 3, 10.0) * 0.5\n        if is_member:\n            return {'status': 'member', 'fee': fee / 2}\n        else:\n            return {'status': 'non-member', 'fee': fee}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "late_fee",
+    "variant": "clean",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 25.7
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 8,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_4",
+        "verdict": "report_bug",
+        "reason": "source returns fee=0.5, spec-derived reference returns fee=0.0",
+        "args": "3, False"
+      },
+      {
+        "test": "test_case_12",
+        "verdict": "report_bug",
+        "reason": "source returns fee=0.25, spec-derived reference returns fee=0.0",
+        "args": "3, True"
+      }
+    ],
+    "needs_review": 6,
+    "tests": "import pytest\nfrom target_module import late_fee\n\ndef test_case_1():\n    result = late_fee(0, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = late_fee(1, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_3():\n    result = late_fee(2, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_4():\n    result = late_fee(3, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_5():\n    result = late_fee(4, False)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_6():\n    result = late_fee(10, False)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_7():\n    result = late_fee(11, False)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_8():\n    result = late_fee(-1, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_9():\n    result = late_fee(0, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_10():\n    result = late_fee(1, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_11():\n    result = late_fee(2, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_12():\n    result = late_fee(3, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_13():\n    result = late_fee(4, True)\n    assert result == {\"status\": \"ok\", \"fee\": 2.5}\n\ndef test_case_14():\n    result = late_fee(10, True)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_15():\n    result = late_fee(11, True)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}",
+    "reference": "def late_fee(days_late, is_member):\n    if days_late < 0:\n        return {'status': 'error', 'fee': 0.0}\n    elif days_late <= 3:\n        return {'status': 'billed', 'fee': 0.0}\n    else:\n        fee = min(days_late - 3, 10) * 0.5\n        if is_member:\n            return {'status': 'billed', 'fee': fee / 2}\n        else:\n            return {'status': 'billed', 'fee': fee}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "late_fee",
+    "variant": "grace_2_days",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 37.4
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 6,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import late_fee\n\ndef test_case_1():\n    result = late_fee(0, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = late_fee(3, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_3():\n    result = late_fee(4, False)\n    assert result == {\"status\": \"ok\", \"fee\": 1.0}\n\ndef test_case_4():\n    result = late_fee(10, False)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_5():\n    result = late_fee(11, False)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_6():\n    result = late_fee(-1, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_7():\n    result = late_fee(0, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_8():\n    result = late_fee(3, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_9():\n    result = late_fee(4, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.5}\n\ndef test_case_10():\n    result = late_fee(10, True)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_11():\n    result = late_fee(11, True)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}",
+    "reference": "def late_fee(days_late, is_member):\n    if days_late < 0:\n        return {'status': 'error', 'fee': 0.0}\n    elif days_late <= 3:\n        return {'status': 'billed', 'fee': 0.0}\n    else:\n        fee = min(days_late - 3, 10) * 0.5\n        if is_member:\n            return {'status': 'billed', 'fee': fee / 2}\n        else:\n            return {'status': 'billed', 'fee': fee}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "late_fee",
+    "variant": "cap_20",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 29.7
+  },
+  {
+    "n_pass": 6,
+    "n_fail": 4,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 2,
+    "tests": "import pytest\nfrom target_module import late_fee\n\ndef test_case_1():\n    result = late_fee(0, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = late_fee(3, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_3():\n    result = late_fee(4, False)\n    assert result == {\"status\": \"ok\", \"fee\": 1.0}\n\ndef test_case_4():\n    result = late_fee(10, False)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_5():\n    result = late_fee(-1, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_6():\n    result = late_fee(0, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_7():\n    result = late_fee(3, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_8():\n    result = late_fee(4, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.8}\n\ndef test_case_9():\n    result = late_fee(10, True)\n    assert result == {\"status\": \"ok\", \"fee\": 4.0}\n\ndef test_case_10():\n    result = late_fee(-1, True)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}",
+    "reference": "def late_fee(days_late, is_member):\n    if days_late < 0:\n        return {'status': 'error', 'fee': 0.0}\n    elif days_late <= 3:\n        return {'status': 'billed', 'fee': 0.0}\n    else:\n        fee = min(days_late - 3, 10) * 0.5\n        if is_member:\n            return {'status': 'billed', 'fee': fee / 2}\n        else:\n            return {'status': 'billed', 'fee': fee}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "late_fee",
+    "variant": "member_80pct",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 26.4
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 4,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import late_fee\n\ndef test_case_1():\n    result = late_fee(0, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = late_fee(3, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_3():\n    result = late_fee(4, False)\n    assert result == {\"status\": \"ok\", \"fee\": 1.0}\n\ndef test_case_4():\n    result = late_fee(10, False)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_5():\n    result = late_fee(-1, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_6():\n    result = late_fee(0, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_7():\n    result = late_fee(3, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_8():\n    result = late_fee(4, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.5}\n\ndef test_case_9():\n    result = late_fee(10, True)\n    assert result == {\"status\": \"ok\", \"fee\": 2.5}",
+    "reference": "def late_fee(days_late, is_member):\n    if days_late < 0:\n        return {'status': 'error', 'fee': 0.0}\n    elif days_late <= 3:\n        return {'status': 'billed', 'fee': 0.0}\n    else:\n        fee = min(days_late - 3, 10) * 0.5\n        if is_member:\n            return {'status': 'billed', 'fee': fee / 2}\n        else:\n            return {'status': 'billed', 'fee': fee}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "late_fee",
+    "variant": "clean",
+    "rep": 1,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 24.8
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 8,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_4",
+        "verdict": "report_bug",
+        "reason": "source returns fee=0.5, spec-derived reference returns fee=0.0",
+        "args": "3, False"
+      },
+      {
+        "test": "test_case_12",
+        "verdict": "report_bug",
+        "reason": "source returns fee=0.25, spec-derived reference returns fee=0.0",
+        "args": "3, True"
+      }
+    ],
+    "needs_review": 6,
+    "tests": "import pytest\nfrom target_module import late_fee\n\ndef test_case_1():\n    result = late_fee(0, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = late_fee(1, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_3():\n    result = late_fee(2, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_4():\n    result = late_fee(3, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_5():\n    result = late_fee(4, False)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_6():\n    result = late_fee(10, False)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_7():\n    result = late_fee(11, False)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_8():\n    result = late_fee(-1, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_9():\n    result = late_fee(0, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_10():\n    result = late_fee(1, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_11():\n    result = late_fee(2, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_12():\n    result = late_fee(3, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_13():\n    result = late_fee(4, True)\n    assert result == {\"status\": \"ok\", \"fee\": 2.5}\n\ndef test_case_14():\n    result = late_fee(10, True)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_15():\n    result = late_fee(11, True)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}",
+    "reference": "def late_fee(days_late, is_member):\n    if days_late < 0:\n        return {'status': 'error', 'fee': 0.0}\n    elif days_late <= 3:\n        return {'status': 'billed', 'fee': 0.0}\n    else:\n        fee = min(days_late - 3, 10) * 0.5\n        if is_member:\n            return {'status': 'billed', 'fee': fee / 2}\n        else:\n            return {'status': 'billed', 'fee': fee}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "late_fee",
+    "variant": "grace_2_days",
+    "rep": 1,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 36.8
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 6,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import late_fee\n\ndef test_case_1():\n    result = late_fee(0, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = late_fee(3, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_3():\n    result = late_fee(4, False)\n    assert result == {\"status\": \"ok\", \"fee\": 1.0}\n\ndef test_case_4():\n    result = late_fee(10, False)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_5():\n    result = late_fee(11, False)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_6():\n    result = late_fee(-1, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_7():\n    result = late_fee(0, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_8():\n    result = late_fee(3, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_9():\n    result = late_fee(4, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.5}\n\ndef test_case_10():\n    result = late_fee(10, True)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_11():\n    result = late_fee(11, True)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}",
+    "reference": "def late_fee(days_late, is_member):\n    if days_late < 0:\n        return {'status': 'error', 'fee': 0.0}\n    elif days_late <= 3:\n        return {'status': 'billed', 'fee': 0.0}\n    else:\n        fee = min(days_late - 3, 10) * 0.5\n        if is_member:\n            return {'status': 'billed', 'fee': fee / 2}\n        else:\n            return {'status': 'billed', 'fee': fee}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "late_fee",
+    "variant": "cap_20",
+    "rep": 1,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 28.7
+  },
+  {
+    "n_pass": 6,
+    "n_fail": 5,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 2,
+    "tests": "import pytest\nfrom target_module import late_fee\n\ndef test_case_1():\n    result = late_fee(0, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = late_fee(3, False)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_3():\n    result = late_fee(4, False)\n    assert result == {\"status\": \"ok\", \"fee\": 1.0}\n\ndef test_case_4():\n    result = late_fee(10, False)\n    assert result == {\"status\": \"ok\", \"fee\": 5.0}\n\ndef test_case_5():\n    result = late_fee(11, False)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_6():\n    result = late_fee(-1, False)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_7():\n    result = late_fee(0, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_8():\n    result = late_fee(3, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_9():\n    result = late_fee(4, True)\n    assert result == {\"status\": \"ok\", \"fee\": 0.8}\n\ndef test_case_10():\n    result = late_fee(10, True)\n    assert result == {\"status\": \"ok\", \"fee\": 8.0}\n\ndef test_case_11():\n    result = late_fee(-1, True)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}",
+    "reference": "def late_fee(days_late, is_member):\n    if days_late < 0:\n        return {'status': 'error', 'fee': 0.0}\n    elif days_late <= 3:\n        return {'status': 'billed', 'fee': 0.0}\n    else:\n        fee = min(days_late - 3, 10) * 0.5\n        if is_member:\n            return {'status': 'billed', 'fee': fee / 2}\n        else:\n            return {'status': 'billed', 'fee': fee}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "late_fee",
+    "variant": "member_80pct",
+    "rep": 1,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 28.4
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 2,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import bulk_total\n\ndef test_case_1():\n    result = bulk_total(10.0, 1)\n    assert result == {\"status\": \"ok\", \"total\": 10.0}\n\ndef test_case_2():\n    result = bulk_total(10.0, 10)\n    assert result == {\"status\": \"ok\", \"total\": 90.0}\n\ndef test_case_3():\n    result = bulk_total(10.0, 50)\n    assert result == {\"status\": \"ok\", \"total\": 80.0}\n\ndef test_case_4():\n    result = bulk_total(10.0, 100)\n    assert result == {\"status\": \"ok\", \"total\": 80.0}\n\ndef test_case_5():\n    result = bulk_total(-10.0, 1)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_6():\n    result = bulk_total(10.0, 0)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_7():\n    result = bulk_total(10.0, -1)\n    assert result == {\"status\": \"error\", \"total\": 0.0}",
+    "reference": "def bulk_total(price, quantity):\n    if price < 0 or quantity < 1:\n        return {'status': 'error', 'total': 0}\n    discount = 0\n    if quantity >= 50:\n        discount = 0.2\n    elif quantity >= 10:\n        discount = 0.1\n    total = round(price * quantity * (1 - discount), 2)\n    return {'status': 'ok', 'total': total}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "bulk_total",
+    "variant": "clean",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 20.9
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 2,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_3",
+        "verdict": "report_bug",
+        "reason": "source returns total=450.0, spec-derived reference returns total=400.0",
+        "args": "10.0, 50"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import bulk_total\n\ndef test_case_1():\n    result = bulk_total(10.0, 1)\n    assert result == {\"status\": \"ok\", \"total\": 10.0}\n\ndef test_case_2():\n    result = bulk_total(10.0, 10)\n    assert result == {\"status\": \"ok\", \"total\": 91.0}\n\ndef test_case_3():\n    result = bulk_total(10.0, 50)\n    assert result == {\"status\": \"ok\", \"total\": 400.0}\n\ndef test_case_4():\n    result = bulk_total(10.0, 51)\n    assert result == {\"status\": \"ok\", \"total\": 408.0}\n\ndef test_case_5():\n    result = bulk_total(10.0, 0)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_6():\n    result = bulk_total(-10.0, 1)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_7():\n    result = bulk_total(10.0, -1)\n    assert result == {\"status\": \"error\", \"total\": 0.0}",
+    "reference": "def bulk_total(price, quantity):\n    if price < 0 or quantity < 1:\n        return {'status': 'error', 'total': 0}\n    discount = 0\n    if quantity >= 50:\n        discount = 0.2\n    elif quantity >= 10:\n        discount = 0.1\n    total = round(price * quantity * (1 - discount), 2)\n    return {'status': 'ok', 'total': total}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "bulk_total",
+    "variant": "threshold_50_exclusive",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 20.7
+  },
+  {
+    "n_pass": 6,
+    "n_fail": 2,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 2,
+    "tests": "import pytest\nfrom target_module import bulk_total\n\ndef test_case_1():\n    result = bulk_total(10.0, 1)\n    assert result == {\"status\": \"ok\", \"total\": 10.0}\n\ndef test_case_2():\n    result = bulk_total(10.0, 10)\n    assert result == {\"status\": \"ok\", \"total\": 90.0}\n\ndef test_case_3():\n    result = bulk_total(10.0, 50)\n    assert result == {\"status\": \"ok\", \"total\": 70.0}\n\ndef test_case_4():\n    result = bulk_total(10.0, 100)\n    assert result == {\"status\": \"ok\", \"total\": 40.0}\n\ndef test_case_5():\n    result = bulk_total(-10.0, 10)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_6():\n    result = bulk_total(10.0, -10)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_7():\n    result = bulk_total(10.0, 0)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_8():\n    result = bulk_total(10.0, 9)\n    assert result == {\"status\": \"ok\", \"total\": 90.0}",
+    "reference": "def bulk_total(price, quantity):\n    if price < 0 or quantity < 1:\n        return {'status': 'error', 'total': 0}\n    discount = 0\n    if quantity >= 50:\n        discount = 0.2\n    elif quantity >= 10:\n        discount = 0.1\n    total = round(price * quantity * (1 - discount), 2)\n    return {'status': 'ok', 'total': total}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "bulk_total",
+    "variant": "discount_25pct",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 22.5
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 3,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 1,
+    "tests": "import pytest\nfrom target_module import bulk_total\n\ndef test_case_1():\n    result = bulk_total(10.0, 1)\n    assert result == {\"status\": \"ok\", \"total\": 10.0}\n\ndef test_case_2():\n    result = bulk_total(10.0, 10)\n    assert result == {\"status\": \"ok\", \"total\": 91.0}\n\ndef test_case_3():\n    result = bulk_total(10.0, 50)\n    assert result == {\"status\": \"ok\", \"total\": 41.0}\n\ndef test_case_4():\n    result = bulk_total(10.0, 100)\n    assert result == {\"status\": \"ok\", \"total\": 20.0}\n\ndef test_case_5():\n    result = bulk_total(-10.0, 10)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_6():\n    result = bulk_total(10.0, 0)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_7():\n    result = bulk_total(10.0, -10)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_8():\n    result = bulk_total(10.0, 9)\n    assert result == {\"status\": \"ok\", \"total\": 90.0}",
+    "reference": "def bulk_total(price, quantity):\n    if price < 0 or quantity < 1:\n        return {'status': 'error', 'total': 0}\n    discount = 0\n    if quantity >= 50:\n        discount = 0.2\n    elif quantity >= 10:\n        discount = 0.1\n    total = round(price * quantity * (1 - discount), 2)\n    return {'status': 'ok', 'total': total}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "bulk_total",
+    "variant": "threshold_10_to_20",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 23.0
+  },
+  {
+    "n_pass": 6,
+    "n_fail": 2,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import bulk_total\n\ndef test_case_1():\n    result = bulk_total(10.0, 1)\n    assert result == {\"status\": \"ok\", \"total\": 10.0}\n\ndef test_case_2():\n    result = bulk_total(10.0, 10)\n    assert result == {\"status\": \"ok\", \"total\": 90.0}\n\ndef test_case_3():\n    result = bulk_total(10.0, 50)\n    assert result == {\"status\": \"ok\", \"total\": 80.0}\n\ndef test_case_4():\n    result = bulk_total(10.0, 100)\n    assert result == {\"status\": \"ok\", \"total\": 80.0}\n\ndef test_case_5():\n    result = bulk_total(10.0, 0)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_6():\n    result = bulk_total(-10.0, 10)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_7():\n    result = bulk_total(10.0, -10)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_8():\n    result = bulk_total(-10.0, -10)\n    assert result == {\"status\": \"error\", \"total\": 0.0}",
+    "reference": "def bulk_total(price, quantity):\n    if price < 0 or quantity < 1:\n        return {'status': 'error', 'total': 0}\n    discount = 0\n    if quantity >= 50:\n        discount = 0.2\n    elif quantity >= 10:\n        discount = 0.1\n    total = round(price * quantity * (1 - discount), 2)\n    return {'status': 'ok', 'total': total}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "bulk_total",
+    "variant": "clean",
+    "rep": 1,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 22.5
+  },
+  {
+    "n_pass": 4,
+    "n_fail": 3,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 1,
+    "tests": "import pytest\nfrom target_module import bulk_total\n\ndef test_case_1():\n    result = bulk_total(10.0, 1)\n    assert result == {\"status\": \"ok\", \"total\": 10.0}\n\ndef test_case_2():\n    result = bulk_total(10.0, 10)\n    assert result == {\"status\": \"ok\", \"total\": 91.0}\n\ndef test_case_3():\n    result = bulk_total(10.0, 50)\n    assert result == {\"status\": \"ok\", \"total\": 82.0}\n\ndef test_case_4():\n    result = bulk_total(10.0, 100)\n    assert result == {\"status\": \"ok\", \"total\": 80.0}\n\ndef test_case_5():\n    result = bulk_total(-10.0, 10)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_6():\n    result = bulk_total(10.0, 0)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_7():\n    result = bulk_total(10.0, -10)\n    assert result == {\"status\": \"error\", \"total\": 0.0}",
+    "reference": "def bulk_total(price, quantity):\n    if price < 0 or quantity < 1:\n        return {'status': 'error', 'total': 0}\n    discount = 0\n    if quantity >= 50:\n        discount = 0.2\n    elif quantity >= 10:\n        discount = 0.1\n    total = round(price * quantity * (1 - discount), 2)\n    return {'status': 'ok', 'total': total}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "bulk_total",
+    "variant": "threshold_50_exclusive",
+    "rep": 1,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 21.4
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 2,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 2,
+    "tests": "import pytest\nfrom target_module import bulk_total\n\ndef test_case_1():\n    result = bulk_total(10.0, 1)\n    assert result == {\"status\": \"ok\", \"total\": 10.0}\n\ndef test_case_2():\n    result = bulk_total(10.0, 10)\n    assert result == {\"status\": \"ok\", \"total\": 90.0}\n\ndef test_case_3():\n    result = bulk_total(10.0, 50)\n    assert result == {\"status\": \"ok\", \"total\": 50.0}\n\ndef test_case_4():\n    result = bulk_total(10.0, 100)\n    assert result == {\"status\": \"ok\", \"total\": 40.0}\n\ndef test_case_5():\n    result = bulk_total(-10.0, 10)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_6():\n    result = bulk_total(10.0, 0)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_7():\n    result = bulk_total(10.0, -10)\n    assert result == {\"status\": \"error\", \"total\": 0.0}",
+    "reference": "def bulk_total(price, quantity):\n    if price < 0 or quantity < 1:\n        return {'status': 'error', 'total': 0}\n    discount = 0\n    if quantity >= 50:\n        discount = 0.2\n    elif quantity >= 10:\n        discount = 0.1\n    total = round(price * quantity * (1 - discount), 2)\n    return {'status': 'ok', 'total': total}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "bulk_total",
+    "variant": "discount_25pct",
+    "rep": 1,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 21.6
+  },
+  {
+    "n_pass": 4,
+    "n_fail": 3,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_2",
+        "verdict": "report_bug",
+        "reason": "source returns total=100.0, spec-derived reference returns total=90.0",
+        "args": "10.0, 10"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import bulk_total\n\ndef test_case_1():\n    result = bulk_total(10.0, 1)\n    assert result == {\"status\": \"ok\", \"total\": 10.0}\n\ndef test_case_2():\n    result = bulk_total(10.0, 10)\n    assert result == {\"status\": \"ok\", \"total\": 90.0}\n\ndef test_case_3():\n    result = bulk_total(10.0, 50)\n    assert result == {\"status\": \"ok\", \"total\": 40.0}\n\ndef test_case_4():\n    result = bulk_total(10.0, 100)\n    assert result == {\"status\": \"ok\", \"total\": 20.0}\n\ndef test_case_5():\n    result = bulk_total(-10.0, 10)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_6():\n    result = bulk_total(10.0, 0)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_7():\n    result = bulk_total(10.0, -10)\n    assert result == {\"status\": \"error\", \"total\": 0.0}",
+    "reference": "def bulk_total(price, quantity):\n    if price < 0 or quantity < 1:\n        return {'status': 'error', 'total': 0}\n    discount = 0\n    if quantity >= 50:\n        discount = 0.2\n    elif quantity >= 10:\n        discount = 0.1\n    total = round(price * quantity * (1 - discount), 2)\n    return {'status': 'ok', 'total': total}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "bulk_total",
+    "variant": "threshold_10_to_20",
+    "rep": 1,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 21.9
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 1,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import ticket_price\n\ndef test_case_1():\n    result = ticket_price(10, False)\n    assert result == {\"status\": \"ok\", \"price\": 6.0}\n\ndef test_case_2():\n    result = ticket_price(65, False)\n    assert result == {\"status\": \"ok\", \"price\": 7.2}\n\ndef test_case_3():\n    result = ticket_price(12, True)\n    assert result == {\"status\": \"ok\", \"price\": 9.6}\n\ndef test_case_4():\n    result = ticket_price(-1, False)\n    assert result == {\"status\": \"error\", \"price\": 0.0}\n\ndef test_case_5():\n    result = ticket_price(70, True)\n    assert result == {\"status\": \"ok\", \"price\": 7.2}\n\ndef test_case_6():\n    result = ticket_price(10, True)\n    assert result == {\"status\": \"ok\", \"price\": 9.6}\n\ndef test_case_7():\n    result = ticket_price(65, False)\n    assert result == {\"status\": \"ok\", \"price\": 7.2}\n\ndef test_case_8():\n    result = ticket_price(12, False)\n    assert result == {\"status\": \"ok\", \"price\": 12.0}",
+    "reference": "def ticket_price(age, is_student):\n    if age < 0:\n        return {'status': 'error', 'price': 0}\n    elif age < 12:\n        return {'status': 'children', 'price': 12 * 0.5}\n    elif age >= 65:\n        return {'status': 'senior', 'price': 12 * 0.6}\n    elif is_student:\n        return {'status': 'student', 'price': 12 * 0.8}\n    else:\n        return {'status': 'adult', 'price': 12}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "ticket",
+    "variant": "clean",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 22.9
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 1,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_3",
+        "verdict": "report_bug",
+        "reason": "source returns price=6.0, spec-derived reference returns price=9.600000000000001",
+        "args": "12, True"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import ticket_price\n\ndef test_case_1():\n    result = ticket_price(10, False)\n    assert result == {\"status\": \"ok\", \"price\": 6.0}\n\ndef test_case_2():\n    result = ticket_price(65, False)\n    assert result == {\"status\": \"ok\", \"price\": 7.2}\n\ndef test_case_3():\n    result = ticket_price(12, True)\n    assert result == {\"status\": \"ok\", \"price\": 9.6}\n\ndef test_case_4():\n    result = ticket_price(-1, False)\n    assert result == {\"status\": \"error\", \"price\": 0.0}\n\ndef test_case_5():\n    result = ticket_price(25, False)\n    assert result == {\"status\": \"ok\", \"price\": 12.0}\n\ndef test_case_6():\n    result = ticket_price(25, True)\n    assert result == {\"status\": \"ok\", \"price\": 9.6}\n\ndef test_case_7():\n    result = ticket_price(25, False)\n    assert result == {\"status\": \"ok\", \"price\": 12.0}\n\ndef test_case_8():\n    result = ticket_price(25, True)\n    assert result == {\"status\": \"ok\", \"price\": 9.6}",
+    "reference": "def ticket_price(age, is_student):\n    if age < 0:\n        return {'status': 'error', 'price': 0}\n    elif age < 12:\n        return {'status': 'children', 'price': 12 * 0.5}\n    elif age >= 65:\n        return {'status': 'senior', 'price': 12 * 0.6}\n    elif is_student:\n        return {'status': 'student', 'price': 12 * 0.8}\n    else:\n        return {'status': 'adult', 'price': 12}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "ticket",
+    "variant": "child_12_inclusive",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 22.8
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 1,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_2",
+        "verdict": "spec_conflict",
+        "args": "65, False",
+        "spec_value": {
+          "status": "senior",
+          "price": 7.199999999999999
+        },
+        "reason": "passes, but the test expects price=8.4 while the spec-derived reference returns price=7.199999999999999"
+      },
+      {
+        "test": "test_case_5",
+        "verdict": "spec_conflict",
+        "args": "70, True",
+        "spec_value": {
+          "status": "senior",
+          "price": 7.199999999999999
+        },
+        "reason": "passes, but the test expects price=8.4 while the spec-derived reference returns price=7.199999999999999"
+      },
+      {
+        "test": "test_case_7",
+        "verdict": "spec_conflict",
+        "args": "65, True",
+        "spec_value": {
+          "status": "senior",
+          "price": 7.199999999999999
+        },
+        "reason": "passes, but the test expects price=8.4 while the spec-derived reference returns price=7.199999999999999"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import ticket_price\n\ndef test_case_1():\n    result = ticket_price(10, False)\n    assert result == {\"status\": \"ok\", \"price\": 6.0}\n\ndef test_case_2():\n    result = ticket_price(65, False)\n    assert result == {\"status\": \"ok\", \"price\": 8.4}\n\ndef test_case_3():\n    result = ticket_price(12, True)\n    assert result == {\"status\": \"ok\", \"price\": 9.6}\n\ndef test_case_4():\n    result = ticket_price(-1, False)\n    assert result == {\"status\": \"error\", \"price\": 0.0}\n\ndef test_case_5():\n    result = ticket_price(70, True)\n    assert result == {\"status\": \"ok\", \"price\": 8.4}\n\ndef test_case_6():\n    result = ticket_price(10, True)\n    assert result == {\"status\": \"ok\", \"price\": 9.6}\n\ndef test_case_7():\n    result = ticket_price(65, True)\n    assert result == {\"status\": \"ok\", \"price\": 8.4}\n\ndef test_case_8():\n    result = ticket_price(12, False)\n    assert result == {\"status\": \"ok\", \"price\": 12.0}",
+    "reference": "def ticket_price(age, is_student):\n    if age < 0:\n        return {'status': 'error', 'price': 0}\n    elif age < 12:\n        return {'status': 'children', 'price': 12 * 0.5}\n    elif age >= 65:\n        return {'status': 'senior', 'price': 12 * 0.6}\n    elif is_student:\n        return {'status': 'student', 'price': 12 * 0.8}\n    else:\n        return {'status': 'adult', 'price': 12}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "ticket",
+    "variant": "senior_70pct",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 22.7
+  },
+  {
+    "n_pass": 8,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_3",
+        "verdict": "spec_conflict",
+        "args": "12, True",
+        "spec_value": {
+          "status": "student",
+          "price": 9.600000000000001
+        },
+        "reason": "passes, but the test expects price=10.8 while the spec-derived reference returns price=9.600000000000001"
+      },
+      {
+        "test": "test_case_6",
+        "verdict": "spec_conflict",
+        "args": "25, True",
+        "spec_value": {
+          "status": "student",
+          "price": 9.600000000000001
+        },
+        "reason": "passes, but the test expects price=10.8 while the spec-derived reference returns price=9.600000000000001"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import ticket_price\n\ndef test_case_1():\n    result = ticket_price(10, False)\n    assert result == {\"status\": \"ok\", \"price\": 6.0}\n\ndef test_case_2():\n    result = ticket_price(65, False)\n    assert result == {\"status\": \"ok\", \"price\": 7.2}\n\ndef test_case_3():\n    result = ticket_price(12, True)\n    assert result == {\"status\": \"ok\", \"price\": 10.8}\n\ndef test_case_4():\n    result = ticket_price(-1, False)\n    assert result == {\"status\": \"error\", \"price\": 0.0}\n\ndef test_case_5():\n    result = ticket_price(25, False)\n    assert result == {\"status\": \"ok\", \"price\": 12.0}\n\ndef test_case_6():\n    result = ticket_price(25, True)\n    assert result == {\"status\": \"ok\", \"price\": 10.8}\n\ndef test_case_7():\n    result = ticket_price(25, False)\n    assert result == {\"status\": \"ok\", \"price\": 12.0}\n\ndef test_case_8():\n    result = ticket_price(25, False)\n    assert result == {\"status\": \"ok\", \"price\": 12.0}",
+    "reference": "def ticket_price(age, is_student):\n    if age < 0:\n        return {'status': 'error', 'price': 0}\n    elif age < 12:\n        return {'status': 'children', 'price': 12 * 0.5}\n    elif age >= 65:\n        return {'status': 'senior', 'price': 12 * 0.6}\n    elif is_student:\n        return {'status': 'student', 'price': 12 * 0.8}\n    else:\n        return {'status': 'adult', 'price': 12}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "ticket",
+    "variant": "student_90pct",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 22.8
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 1,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import ticket_price\n\ndef test_case_1():\n    result = ticket_price(10, False)\n    assert result == {\"status\": \"ok\", \"price\": 6.0}\n\ndef test_case_2():\n    result = ticket_price(65, False)\n    assert result == {\"status\": \"ok\", \"price\": 7.2}\n\ndef test_case_3():\n    result = ticket_price(12, True)\n    assert result == {\"status\": \"ok\", \"price\": 9.6}\n\ndef test_case_4():\n    result = ticket_price(-1, False)\n    assert result == {\"status\": \"error\", \"price\": 0.0}\n\ndef test_case_5():\n    result = ticket_price(70, True)\n    assert result == {\"status\": \"ok\", \"price\": 7.2}\n\ndef test_case_6():\n    result = ticket_price(10, True)\n    assert result == {\"status\": \"ok\", \"price\": 9.6}\n\ndef test_case_7():\n    result = ticket_price(65, True)\n    assert result == {\"status\": \"ok\", \"price\": 7.2}\n\ndef test_case_8():\n    result = ticket_price(12, False)\n    assert result == {\"status\": \"ok\", \"price\": 12.0}",
+    "reference": "def ticket_price(age, is_student):\n    if age < 0:\n        return {'status': 'error', 'price': 0}\n    elif age < 12:\n        return {'status': 'children', 'price': 12 * 0.5}\n    elif age >= 65:\n        return {'status': 'senior', 'price': 12 * 0.6}\n    elif is_student:\n        return {'status': 'student', 'price': 12 * 0.8}\n    else:\n        return {'status': 'adult', 'price': 12}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "ticket",
+    "variant": "clean",
+    "rep": 1,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 22.9
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 1,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_3",
+        "verdict": "report_bug",
+        "reason": "source returns price=6.0, spec-derived reference returns price=9.600000000000001",
+        "args": "12, True"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import ticket_price\n\ndef test_case_1():\n    result = ticket_price(10, False)\n    assert result == {\"status\": \"ok\", \"price\": 6.0}\n\ndef test_case_2():\n    result = ticket_price(65, False)\n    assert result == {\"status\": \"ok\", \"price\": 7.2}\n\ndef test_case_3():\n    result = ticket_price(12, True)\n    assert result == {\"status\": \"ok\", \"price\": 9.6}\n\ndef test_case_4():\n    result = ticket_price(-1, False)\n    assert result == {\"status\": \"error\", \"price\": 0.0}\n\ndef test_case_5():\n    result = ticket_price(25, False)\n    assert result == {\"status\": \"ok\", \"price\": 12.0}\n\ndef test_case_6():\n    result = ticket_price(25, True)\n    assert result == {\"status\": \"ok\", \"price\": 9.6}\n\ndef test_case_7():\n    result = ticket_price(25, False)\n    assert result == {\"status\": \"ok\", \"price\": 12.0}\n\ndef test_case_8():\n    result = ticket_price(25, True)\n    assert result == {\"status\": \"ok\", \"price\": 9.6}",
+    "reference": "def ticket_price(age, is_student):\n    if age < 0:\n        return {'status': 'error', 'price': 0}\n    elif age < 12:\n        return {'status': 'children', 'price': 12 * 0.5}\n    elif age >= 65:\n        return {'status': 'senior', 'price': 12 * 0.6}\n    elif is_student:\n        return {'status': 'student', 'price': 12 * 0.8}\n    else:\n        return {'status': 'adult', 'price': 12}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "ticket",
+    "variant": "child_12_inclusive",
+    "rep": 1,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 23.1
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 1,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_2",
+        "verdict": "spec_conflict",
+        "args": "65, False",
+        "spec_value": {
+          "status": "senior",
+          "price": 7.199999999999999
+        },
+        "reason": "passes, but the test expects price=8.4 while the spec-derived reference returns price=7.199999999999999"
+      },
+      {
+        "test": "test_case_5",
+        "verdict": "spec_conflict",
+        "args": "70, True",
+        "spec_value": {
+          "status": "senior",
+          "price": 7.199999999999999
+        },
+        "reason": "passes, but the test expects price=8.4 while the spec-derived reference returns price=7.199999999999999"
+      },
+      {
+        "test": "test_case_7",
+        "verdict": "spec_conflict",
+        "args": "65, True",
+        "spec_value": {
+          "status": "senior",
+          "price": 7.199999999999999
+        },
+        "reason": "passes, but the test expects price=8.4 while the spec-derived reference returns price=7.199999999999999"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import ticket_price\n\ndef test_case_1():\n    result = ticket_price(10, False)\n    assert result == {\"status\": \"ok\", \"price\": 6.0}\n\ndef test_case_2():\n    result = ticket_price(65, False)\n    assert result == {\"status\": \"ok\", \"price\": 8.4}\n\ndef test_case_3():\n    result = ticket_price(12, True)\n    assert result == {\"status\": \"ok\", \"price\": 9.6}\n\ndef test_case_4():\n    result = ticket_price(-1, False)\n    assert result == {\"status\": \"error\", \"price\": 0.0}\n\ndef test_case_5():\n    result = ticket_price(70, True)\n    assert result == {\"status\": \"ok\", \"price\": 8.4}\n\ndef test_case_6():\n    result = ticket_price(10, True)\n    assert result == {\"status\": \"ok\", \"price\": 9.6}\n\ndef test_case_7():\n    result = ticket_price(65, True)\n    assert result == {\"status\": \"ok\", \"price\": 8.4}\n\ndef test_case_8():\n    result = ticket_price(12, False)\n    assert result == {\"status\": \"ok\", \"price\": 12.0}",
+    "reference": "def ticket_price(age, is_student):\n    if age < 0:\n        return {'status': 'error', 'price': 0}\n    elif age < 12:\n        return {'status': 'children', 'price': 12 * 0.5}\n    elif age >= 65:\n        return {'status': 'senior', 'price': 12 * 0.6}\n    elif is_student:\n        return {'status': 'student', 'price': 12 * 0.8}\n    else:\n        return {'status': 'adult', 'price': 12}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "ticket",
+    "variant": "senior_70pct",
+    "rep": 1,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 23.3
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 4,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_3",
+        "verdict": "spec_conflict",
+        "args": "12, True",
+        "spec_value": {
+          "status": "student",
+          "price": 9.600000000000001
+        },
+        "reason": "passes, but the test expects price=10.8 while the spec-derived reference returns price=9.600000000000001"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import ticket_price\n\ndef test_case_1():\n    result = ticket_price(10, False)\n    assert result == {\"status\": \"ok\", \"price\": 6.0}\n\ndef test_case_2():\n    result = ticket_price(65, False)\n    assert result == {\"status\": \"ok\", \"price\": 7.2}\n\ndef test_case_3():\n    result = ticket_price(12, True)\n    assert result == {\"status\": \"ok\", \"price\": 10.8}\n\ndef test_case_4():\n    result = ticket_price(-1, False)\n    assert result == {\"status\": \"error\", \"price\": 0.0}\n\ndef test_case_5():\n    result = ticket_price(70, True)\n    assert result == {\"status\": \"ok\", \"price\": 8.4}\n\ndef test_case_6():\n    result = ticket_price(12, False)\n    assert result == {\"status\": \"ok\", \"price\": 12.0}\n\ndef test_case_7():\n    result = ticket_price(65, True)\n    assert result == {\"status\": \"ok\", \"price\": 10.8}\n\ndef test_case_8():\n    result = ticket_price(0, False)\n    assert result == {\"status\": \"ok\", \"price\": 12.0}\n\ndef test_case_9():\n    result = ticket_price(100, False)\n    assert result == {\"status\": \"ok\", \"price\": 12.0}",
+    "reference": "def ticket_price(age, is_student):\n    if age < 0:\n        return {'status': 'error', 'price': 0}\n    elif age < 12:\n        return {'status': 'children', 'price': 12 * 0.5}\n    elif age >= 65:\n        return {'status': 'senior', 'price': 12 * 0.6}\n    elif is_student:\n        return {'status': 'student', 'price': 12 * 0.8}\n    else:\n        return {'status': 'adult', 'price': 12}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "ticket",
+    "variant": "student_90pct",
+    "rep": 1,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 24.9
+  },
+  {
+    "n_pass": 6,
+    "n_fail": 1,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import weekly_pay\n\ndef test_case_1():\n    result = weekly_pay(40, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 400.0}\n\ndef test_case_2():\n    result = weekly_pay(50, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 550.0}\n\ndef test_case_3():\n    result = weekly_pay(70, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 900.0}\n\ndef test_case_4():\n    result = weekly_pay(80, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 1060.0}\n\ndef test_case_5():\n    result = weekly_pay(-10, 10)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}\n\ndef test_case_6():\n    result = weekly_pay(40, 0)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}\n\ndef test_case_7():\n    result = weekly_pay(40, -10)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}",
+    "reference": "def weekly_pay(hours, hourly_rate):\n    if hours <= 0 or hourly_rate <= 0:\n        return {'status': 'error', 'pay': 0}\n    elif hours <= 40:\n        return {'status': 'ok', 'pay': hours * hourly_rate}\n    elif hours <= 60:\n        return {'status': 'ok', 'pay': 40 * hourly_rate + (hours - 40) * hourly_rate * 1.5}\n    else:\n        return {'status': 'ok', 'pay': 40 * hourly_rate + 20 * hourly_rate * 1.5 + (hours - 60) * hourly_rate * 2}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "weekly_pay",
+    "variant": "clean",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 22.6
+  },
+  {
+    "n_pass": 4,
+    "n_fail": 2,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_2",
+        "verdict": "report_bug",
+        "reason": "source returns pay=600.0, spec-derived reference returns pay=550.0",
+        "args": "50, 10"
+      },
+      {
+        "test": "test_case_3",
+        "verdict": "report_bug",
+        "reason": "source returns pay=950.0, spec-derived reference returns pay=900.0",
+        "args": "70, 10"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import weekly_pay\n\ndef test_case_1():\n    result = weekly_pay(40, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 400.0}\n\ndef test_case_2():\n    result = weekly_pay(50, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 550.0}\n\ndef test_case_3():\n    result = weekly_pay(70, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 900.0}\n\ndef test_case_4():\n    result = weekly_pay(40, 0)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}\n\ndef test_case_5():\n    result = weekly_pay(-10, 10)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}\n\ndef test_case_6():\n    result = weekly_pay(40, -10)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}",
+    "reference": "def weekly_pay(hours, hourly_rate):\n    if hours <= 0 or hourly_rate <= 0:\n        return {'status': 'error', 'pay': 0}\n    elif hours <= 40:\n        return {'status': 'ok', 'pay': hours * hourly_rate}\n    elif hours <= 60:\n        return {'status': 'ok', 'pay': 40 * hourly_rate + (hours - 40) * hourly_rate * 1.5}\n    else:\n        return {'status': 'ok', 'pay': 40 * hourly_rate + 20 * hourly_rate * 1.5 + (hours - 60) * hourly_rate * 2}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "weekly_pay",
+    "variant": "regular_cap_45",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 20.4
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 1,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_2",
+        "verdict": "spec_conflict",
+        "args": "50, 10",
+        "spec_value": {
+          "status": "ok",
+          "pay": 550.0
+        },
+        "reason": "passes, but the test expects pay=525.0 while the spec-derived reference returns pay=550.0"
+      }
+    ],
+    "needs_review": 1,
+    "tests": "import pytest\nfrom target_module import weekly_pay\n\ndef test_case_1():\n    result = weekly_pay(40, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 400.0}\n\ndef test_case_2():\n    result = weekly_pay(50, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 525.0}\n\ndef test_case_3():\n    result = weekly_pay(70, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 1050.0}\n\ndef test_case_4():\n    result = weekly_pay(40, 0)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}\n\ndef test_case_5():\n    result = weekly_pay(-10, 10)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}\n\ndef test_case_6():\n    result = weekly_pay(40, -10)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}",
+    "reference": "def weekly_pay(hours, hourly_rate):\n    if hours <= 0 or hourly_rate <= 0:\n        return {'status': 'error', 'pay': 0}\n    elif hours <= 40:\n        return {'status': 'ok', 'pay': hours * hourly_rate}\n    elif hours <= 60:\n        return {'status': 'ok', 'pay': 40 * hourly_rate + (hours - 40) * hourly_rate * 1.5}\n    else:\n        return {'status': 'ok', 'pay': 40 * hourly_rate + 20 * hourly_rate * 1.5 + (hours - 60) * hourly_rate * 2}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "weekly_pay",
+    "variant": "overtime_1_25x",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 22.9
+  },
+  {
+    "n_pass": 6,
+    "n_fail": 1,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_4",
+        "verdict": "report_bug",
+        "reason": "source returns pay=1000.0, spec-derived reference returns pay=1100.0",
+        "args": "80, 10"
+      },
+      {
+        "test": "test_case_3",
+        "verdict": "spec_conflict",
+        "args": "70, 10",
+        "spec_value": {
+          "status": "ok",
+          "pay": 900.0
+        },
+        "reason": "passes, but the test expects pay=850.0 while the spec-derived reference returns pay=900.0"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import weekly_pay\n\ndef test_case_1():\n    result = weekly_pay(40, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 400.0}\n\ndef test_case_2():\n    result = weekly_pay(50, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 550.0}\n\ndef test_case_3():\n    result = weekly_pay(70, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 850.0}\n\ndef test_case_4():\n    result = weekly_pay(80, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 1100.0}\n\ndef test_case_5():\n    result = weekly_pay(-10, 10)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}\n\ndef test_case_6():\n    result = weekly_pay(40, 0)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}\n\ndef test_case_7():\n    result = weekly_pay(40, -10)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}",
+    "reference": "def weekly_pay(hours, hourly_rate):\n    if hours <= 0 or hourly_rate <= 0:\n        return {'status': 'error', 'pay': 0}\n    elif hours <= 40:\n        return {'status': 'ok', 'pay': hours * hourly_rate}\n    elif hours <= 60:\n        return {'status': 'ok', 'pay': 40 * hourly_rate + (hours - 40) * hourly_rate * 1.5}\n    else:\n        return {'status': 'ok', 'pay': 40 * hourly_rate + 20 * hourly_rate * 1.5 + (hours - 60) * hourly_rate * 2}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "weekly_pay",
+    "variant": "double_1_5x",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 23.0
+  },
+  {
+    "n_pass": 6,
+    "n_fail": 1,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import weekly_pay\n\ndef test_case_1():\n    result = weekly_pay(40, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 400.0}\n\ndef test_case_2():\n    result = weekly_pay(50, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 550.0}\n\ndef test_case_3():\n    result = weekly_pay(70, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 900.0}\n\ndef test_case_4():\n    result = weekly_pay(80, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 1060.0}\n\ndef test_case_5():\n    result = weekly_pay(-10, 10)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}\n\ndef test_case_6():\n    result = weekly_pay(40, 0)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}\n\ndef test_case_7():\n    result = weekly_pay(40, -10)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}",
+    "reference": "def weekly_pay(hours, hourly_rate):\n    if hours <= 0 or hourly_rate <= 0:\n        return {'status': 'error', 'pay': 0}\n    elif hours <= 40:\n        return {'status': 'ok', 'pay': hours * hourly_rate}\n    elif hours <= 60:\n        return {'status': 'ok', 'pay': 40 * hourly_rate + (hours - 40) * hourly_rate * 1.5}\n    else:\n        return {'status': 'ok', 'pay': 40 * hourly_rate + 20 * hourly_rate * 1.5 + (hours - 60) * hourly_rate * 2}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "weekly_pay",
+    "variant": "clean",
+    "rep": 1,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 22.5
+  },
+  {
+    "n_pass": 4,
+    "n_fail": 2,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_2",
+        "verdict": "report_bug",
+        "reason": "source returns pay=600.0, spec-derived reference returns pay=550.0",
+        "args": "50, 10"
+      }
+    ],
+    "needs_review": 1,
+    "tests": "import pytest\nfrom target_module import weekly_pay\n\ndef test_case_1():\n    result = weekly_pay(40, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 400.0}\n\ndef test_case_2():\n    result = weekly_pay(50, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 550.0}\n\ndef test_case_3():\n    result = weekly_pay(70, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 850.0}\n\ndef test_case_4():\n    result = weekly_pay(40, 0)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}\n\ndef test_case_5():\n    result = weekly_pay(-10, 10)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}\n\ndef test_case_6():\n    result = weekly_pay(40, -10)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}",
+    "reference": "def weekly_pay(hours, hourly_rate):\n    if hours <= 0 or hourly_rate <= 0:\n        return {'status': 'error', 'pay': 0}\n    elif hours <= 40:\n        return {'status': 'ok', 'pay': hours * hourly_rate}\n    elif hours <= 60:\n        return {'status': 'ok', 'pay': 40 * hourly_rate + (hours - 40) * hourly_rate * 1.5}\n    else:\n        return {'status': 'ok', 'pay': 40 * hourly_rate + 20 * hourly_rate * 1.5 + (hours - 60) * hourly_rate * 2}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "weekly_pay",
+    "variant": "regular_cap_45",
+    "rep": 1,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 20.6
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 1,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_2",
+        "verdict": "spec_conflict",
+        "args": "50, 10",
+        "spec_value": {
+          "status": "ok",
+          "pay": 550.0
+        },
+        "reason": "passes, but the test expects pay=525.0 while the spec-derived reference returns pay=550.0"
+      }
+    ],
+    "needs_review": 1,
+    "tests": "import pytest\nfrom target_module import weekly_pay\n\ndef test_case_1():\n    result = weekly_pay(40, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 400.0}\n\ndef test_case_2():\n    result = weekly_pay(50, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 525.0}\n\ndef test_case_3():\n    result = weekly_pay(70, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 1050.0}\n\ndef test_case_4():\n    result = weekly_pay(40, 0)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}\n\ndef test_case_5():\n    result = weekly_pay(-10, 10)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}\n\ndef test_case_6():\n    result = weekly_pay(40, -10)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}",
+    "reference": "def weekly_pay(hours, hourly_rate):\n    if hours <= 0 or hourly_rate <= 0:\n        return {'status': 'error', 'pay': 0}\n    elif hours <= 40:\n        return {'status': 'ok', 'pay': hours * hourly_rate}\n    elif hours <= 60:\n        return {'status': 'ok', 'pay': 40 * hourly_rate + (hours - 40) * hourly_rate * 1.5}\n    else:\n        return {'status': 'ok', 'pay': 40 * hourly_rate + 20 * hourly_rate * 1.5 + (hours - 60) * hourly_rate * 2}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "weekly_pay",
+    "variant": "overtime_1_25x",
+    "rep": 1,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 20.4
+  },
+  {
+    "n_pass": 6,
+    "n_fail": 1,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_4",
+        "verdict": "report_bug",
+        "reason": "source returns pay=1000.0, spec-derived reference returns pay=1100.0",
+        "args": "80, 10"
+      },
+      {
+        "test": "test_case_3",
+        "verdict": "spec_conflict",
+        "args": "70, 10",
+        "spec_value": {
+          "status": "ok",
+          "pay": 900.0
+        },
+        "reason": "passes, but the test expects pay=850.0 while the spec-derived reference returns pay=900.0"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import weekly_pay\n\ndef test_case_1():\n    result = weekly_pay(40, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 400.0}\n\ndef test_case_2():\n    result = weekly_pay(50, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 550.0}\n\ndef test_case_3():\n    result = weekly_pay(70, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 850.0}\n\ndef test_case_4():\n    result = weekly_pay(80, 10)\n    assert result == {\"status\": \"ok\", \"pay\": 1100.0}\n\ndef test_case_5():\n    result = weekly_pay(-10, 10)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}\n\ndef test_case_6():\n    result = weekly_pay(40, 0)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}\n\ndef test_case_7():\n    result = weekly_pay(40, -10)\n    assert result == {\"status\": \"error\", \"pay\": 0.0}",
+    "reference": "def weekly_pay(hours, hourly_rate):\n    if hours <= 0 or hourly_rate <= 0:\n        return {'status': 'error', 'pay': 0}\n    elif hours <= 40:\n        return {'status': 'ok', 'pay': hours * hourly_rate}\n    elif hours <= 60:\n        return {'status': 'ok', 'pay': 40 * hourly_rate + (hours - 40) * hourly_rate * 1.5}\n    else:\n        return {'status': 'ok', 'pay': 40 * hourly_rate + 20 * hourly_rate * 1.5 + (hours - 60) * hourly_rate * 2}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "weekly_pay",
+    "variant": "double_1_5x",
+    "rep": 1,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 22.4
+  },
+  {
+    "n_pass": 6,
+    "n_fail": 4,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_5",
+        "verdict": "report_bug",
+        "reason": "source returns fee=2.0, spec-derived reference returns fee=4",
+        "args": "61"
+      },
+      {
+        "test": "test_case_2",
+        "verdict": "spec_conflict",
+        "args": "30",
+        "spec_value": {
+          "status": "ok",
+          "fee": 2
+        },
+        "reason": "passes, but the test expects fee=0.0 while the spec-derived reference returns fee=2"
+      }
+    ],
+    "needs_review": 1,
+    "tests": "import pytest\nfrom target_module import parking_fee\n\ndef test_case_1():\n    result = parking_fee(0)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = parking_fee(30)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_3():\n    result = parking_fee(31)\n    assert result == {\"status\": \"ok\", \"fee\": 2.0}\n\ndef test_case_4():\n    result = parking_fee(60)\n    assert result == {\"status\": \"ok\", \"fee\": 4.0}\n\ndef test_case_5():\n    result = parking_fee(61)\n    assert result == {\"status\": \"ok\", \"fee\": 4.0}\n\ndef test_case_6():\n    result = parking_fee(120)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_7():\n    result = parking_fee(121)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_8():\n    result = parking_fee(1440)\n    assert result == {\"status\": \"ok\", \"fee\": 20.0}\n\ndef test_case_9():\n    result = parking_fee(-1)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_10():\n    result = parking_fee(-30)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}",
+    "reference": "def parking_fee(minutes):\n    if minutes < 0:\n        return {'status': 'error', 'fee': 0}\n    minutes = int(minutes // 60 + (minutes % 60 != 0))\n    fee = min(minutes * 2, 20)\n    return {'status': 'ok', 'fee': fee}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "parking",
+    "variant": "clean",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 22.9
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 5,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_5",
+        "verdict": "report_bug",
+        "reason": "source returns fee=2.0, spec-derived reference returns fee=4",
+        "args": "61"
+      }
+    ],
+    "needs_review": 1,
+    "tests": "import pytest\nfrom target_module import parking_fee\n\ndef test_case_1():\n    result = parking_fee(0)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = parking_fee(30)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_3():\n    result = parking_fee(31)\n    assert result == {\"status\": \"ok\", \"fee\": 2.0}\n\ndef test_case_4():\n    result = parking_fee(60)\n    assert result == {\"status\": \"ok\", \"fee\": 4.0}\n\ndef test_case_5():\n    result = parking_fee(61)\n    assert result == {\"status\": \"ok\", \"fee\": 4.0}\n\ndef test_case_6():\n    result = parking_fee(120)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_7():\n    result = parking_fee(121)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_8():\n    result = parking_fee(1440)\n    assert result == {\"status\": \"ok\", \"fee\": 20.0}\n\ndef test_case_9():\n    result = parking_fee(-1)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_10():\n    result = parking_fee(-30)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}",
+    "reference": "def parking_fee(minutes):\n    if minutes < 0:\n        return {'status': 'error', 'fee': 0}\n    minutes = int(minutes // 60 + (minutes % 60 != 0))\n    fee = min(minutes * 2, 20)\n    return {'status': 'ok', 'fee': fee}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "parking",
+    "variant": "free_20_minutes",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 22.8
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 5,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_3",
+        "verdict": "report_bug",
+        "reason": "source returns fee=0.0, spec-derived reference returns fee=2",
+        "args": "31"
+      },
+      {
+        "test": "test_case_5",
+        "verdict": "report_bug",
+        "reason": "source returns fee=0.0, spec-derived reference returns fee=4",
+        "args": "61"
+      },
+      {
+        "test": "test_case_2",
+        "verdict": "spec_conflict",
+        "args": "30",
+        "spec_value": {
+          "status": "ok",
+          "fee": 2
+        },
+        "reason": "passes, but the test expects fee=0.0 while the spec-derived reference returns fee=2"
+      }
+    ],
+    "needs_review": 3,
+    "tests": "import pytest\nfrom target_module import parking_fee\n\ndef test_case_1():\n    result = parking_fee(0)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = parking_fee(30)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_3():\n    result = parking_fee(31)\n    assert result == {\"status\": \"ok\", \"fee\": 2.0}\n\ndef test_case_4():\n    result = parking_fee(60)\n    assert result == {\"status\": \"ok\", \"fee\": 4.0}\n\ndef test_case_5():\n    result = parking_fee(61)\n    assert result == {\"status\": \"ok\", \"fee\": 4.0}\n\ndef test_case_6():\n    result = parking_fee(120)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_7():\n    result = parking_fee(121)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_8():\n    result = parking_fee(1440)\n    assert result == {\"status\": \"ok\", \"fee\": 20.0}\n\ndef test_case_9():\n    result = parking_fee(-1)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_10():\n    result = parking_fee(-30)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}",
+    "reference": "def parking_fee(minutes):\n    if minutes < 0:\n        return {'status': 'error', 'fee': 0}\n    minutes = int(minutes // 60 + (minutes % 60 != 0))\n    fee = min(minutes * 2, 20)\n    return {'status': 'ok', 'fee': fee}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "parking",
+    "variant": "floor_hours",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 22.9
+  },
+  {
+    "n_pass": 4,
+    "n_fail": 6,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_5",
+        "verdict": "report_bug",
+        "reason": "source returns fee=2.0, spec-derived reference returns fee=4",
+        "args": "61"
+      },
+      {
+        "test": "test_case_8",
+        "verdict": "report_bug",
+        "reason": "source returns fee=30.0, spec-derived reference returns fee=20",
+        "args": "1800"
+      },
+      {
+        "test": "test_case_9",
+        "verdict": "report_bug",
+        "reason": "source returns fee=30.0, spec-derived reference returns fee=20",
+        "args": "1801"
+      },
+      {
+        "test": "test_case_2",
+        "verdict": "spec_conflict",
+        "args": "30",
+        "spec_value": {
+          "status": "ok",
+          "fee": 2
+        },
+        "reason": "passes, but the test expects fee=0.0 while the spec-derived reference returns fee=2"
+      }
+    ],
+    "needs_review": 1,
+    "tests": "import pytest\nfrom target_module import parking_fee\n\ndef test_case_1():\n    result = parking_fee(0)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = parking_fee(30)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_3():\n    result = parking_fee(31)\n    assert result == {\"status\": \"ok\", \"fee\": 2.0}\n\ndef test_case_4():\n    result = parking_fee(60)\n    assert result == {\"status\": \"ok\", \"fee\": 4.0}\n\ndef test_case_5():\n    result = parking_fee(61)\n    assert result == {\"status\": \"ok\", \"fee\": 4.0}\n\ndef test_case_6():\n    result = parking_fee(120)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_7():\n    result = parking_fee(121)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_8():\n    result = parking_fee(1800)\n    assert result == {\"status\": \"ok\", \"fee\": 20.0}\n\ndef test_case_9():\n    result = parking_fee(1801)\n    assert result == {\"status\": \"ok\", \"fee\": 20.0}\n\ndef test_case_10():\n    result = parking_fee(-1)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}",
+    "reference": "def parking_fee(minutes):\n    if minutes < 0:\n        return {'status': 'error', 'fee': 0}\n    minutes = int(minutes // 60 + (minutes % 60 != 0))\n    fee = min(minutes * 2, 20)\n    return {'status': 'ok', 'fee': fee}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "parking",
+    "variant": "cap_30",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 23.2
+  },
+  {
+    "n_pass": 6,
+    "n_fail": 4,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_5",
+        "verdict": "report_bug",
+        "reason": "source returns fee=2.0, spec-derived reference returns fee=4",
+        "args": "61"
+      },
+      {
+        "test": "test_case_2",
+        "verdict": "spec_conflict",
+        "args": "30",
+        "spec_value": {
+          "status": "ok",
+          "fee": 2
+        },
+        "reason": "passes, but the test expects fee=0.0 while the spec-derived reference returns fee=2"
+      }
+    ],
+    "needs_review": 1,
+    "tests": "import pytest\nfrom target_module import parking_fee\n\ndef test_case_1():\n    result = parking_fee(0)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = parking_fee(30)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_3():\n    result = parking_fee(31)\n    assert result == {\"status\": \"ok\", \"fee\": 2.0}\n\ndef test_case_4():\n    result = parking_fee(60)\n    assert result == {\"status\": \"ok\", \"fee\": 4.0}\n\ndef test_case_5():\n    result = parking_fee(61)\n    assert result == {\"status\": \"ok\", \"fee\": 4.0}\n\ndef test_case_6():\n    result = parking_fee(120)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_7():\n    result = parking_fee(121)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_8():\n    result = parking_fee(1440)\n    assert result == {\"status\": \"ok\", \"fee\": 20.0}\n\ndef test_case_9():\n    result = parking_fee(-1)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_10():\n    result = parking_fee(-30)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}",
+    "reference": "def parking_fee(minutes):\n    if minutes < 0:\n        return {'status': 'error', 'fee': 0}\n    minutes = int(minutes // 60 + (minutes % 60 != 0))\n    fee = min(minutes * 2, 20)\n    return {'status': 'ok', 'fee': fee}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "parking",
+    "variant": "clean",
+    "rep": 1,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 23.0
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 5,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_5",
+        "verdict": "report_bug",
+        "reason": "source returns fee=2.0, spec-derived reference returns fee=4",
+        "args": "61"
+      }
+    ],
+    "needs_review": 1,
+    "tests": "import pytest\nfrom target_module import parking_fee\n\ndef test_case_1():\n    result = parking_fee(0)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = parking_fee(30)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_3():\n    result = parking_fee(31)\n    assert result == {\"status\": \"ok\", \"fee\": 2.0}\n\ndef test_case_4():\n    result = parking_fee(60)\n    assert result == {\"status\": \"ok\", \"fee\": 4.0}\n\ndef test_case_5():\n    result = parking_fee(61)\n    assert result == {\"status\": \"ok\", \"fee\": 4.0}\n\ndef test_case_6():\n    result = parking_fee(120)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_7():\n    result = parking_fee(121)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_8():\n    result = parking_fee(1440)\n    assert result == {\"status\": \"ok\", \"fee\": 20.0}\n\ndef test_case_9():\n    result = parking_fee(-1)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}\n\ndef test_case_10():\n    result = parking_fee(-10)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}",
+    "reference": "def parking_fee(minutes):\n    if minutes < 0:\n        return {'status': 'error', 'fee': 0}\n    minutes = int(minutes // 60 + (minutes % 60 != 0))\n    fee = min(minutes * 2, 20)\n    return {'status': 'ok', 'fee': fee}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "parking",
+    "variant": "free_20_minutes",
+    "rep": 1,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 22.7
+  },
+  {
+    "n_pass": 4,
+    "n_fail": 5,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_3",
+        "verdict": "report_bug",
+        "reason": "source returns fee=0.0, spec-derived reference returns fee=2",
+        "args": "31"
+      },
+      {
+        "test": "test_case_5",
+        "verdict": "report_bug",
+        "reason": "source returns fee=0.0, spec-derived reference returns fee=4",
+        "args": "61"
+      },
+      {
+        "test": "test_case_2",
+        "verdict": "spec_conflict",
+        "args": "30",
+        "spec_value": {
+          "status": "ok",
+          "fee": 2
+        },
+        "reason": "passes, but the test expects fee=0.0 while the spec-derived reference returns fee=2"
+      }
+    ],
+    "needs_review": 3,
+    "tests": "import pytest\nfrom target_module import parking_fee\n\ndef test_case_1():\n    result = parking_fee(0)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = parking_fee(30)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_3():\n    result = parking_fee(31)\n    assert result == {\"status\": \"ok\", \"fee\": 2.0}\n\ndef test_case_4():\n    result = parking_fee(60)\n    assert result == {\"status\": \"ok\", \"fee\": 4.0}\n\ndef test_case_5():\n    result = parking_fee(61)\n    assert result == {\"status\": \"ok\", \"fee\": 4.0}\n\ndef test_case_6():\n    result = parking_fee(120)\n    assert result == {\"status\": \"ok\", \"fee\": 8.0}\n\ndef test_case_7():\n    result = parking_fee(121)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_8():\n    result = parking_fee(1440)\n    assert result == {\"status\": \"ok\", \"fee\": 20.0}\n\ndef test_case_9():\n    result = parking_fee(-1)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}",
+    "reference": "def parking_fee(minutes):\n    if minutes < 0:\n        return {'status': 'error', 'fee': 0}\n    minutes = int(minutes // 60 + (minutes % 60 != 0))\n    fee = min(minutes * 2, 20)\n    return {'status': 'ok', 'fee': fee}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "parking",
+    "variant": "floor_hours",
+    "rep": 1,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 21.7
+  },
+  {
+    "n_pass": 4,
+    "n_fail": 6,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_5",
+        "verdict": "report_bug",
+        "reason": "source returns fee=2.0, spec-derived reference returns fee=4",
+        "args": "61"
+      },
+      {
+        "test": "test_case_8",
+        "verdict": "report_bug",
+        "reason": "source returns fee=30.0, spec-derived reference returns fee=20",
+        "args": "1800"
+      },
+      {
+        "test": "test_case_9",
+        "verdict": "report_bug",
+        "reason": "source returns fee=30.0, spec-derived reference returns fee=20",
+        "args": "1801"
+      },
+      {
+        "test": "test_case_2",
+        "verdict": "spec_conflict",
+        "args": "30",
+        "spec_value": {
+          "status": "ok",
+          "fee": 2
+        },
+        "reason": "passes, but the test expects fee=0.0 while the spec-derived reference returns fee=2"
+      }
+    ],
+    "needs_review": 1,
+    "tests": "import pytest\nfrom target_module import parking_fee\n\ndef test_case_1():\n    result = parking_fee(0)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_2():\n    result = parking_fee(30)\n    assert result == {\"status\": \"ok\", \"fee\": 0.0}\n\ndef test_case_3():\n    result = parking_fee(31)\n    assert result == {\"status\": \"ok\", \"fee\": 2.0}\n\ndef test_case_4():\n    result = parking_fee(60)\n    assert result == {\"status\": \"ok\", \"fee\": 4.0}\n\ndef test_case_5():\n    result = parking_fee(61)\n    assert result == {\"status\": \"ok\", \"fee\": 4.0}\n\ndef test_case_6():\n    result = parking_fee(120)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_7():\n    result = parking_fee(121)\n    assert result == {\"status\": \"ok\", \"fee\": 10.0}\n\ndef test_case_8():\n    result = parking_fee(1800)\n    assert result == {\"status\": \"ok\", \"fee\": 20.0}\n\ndef test_case_9():\n    result = parking_fee(1801)\n    assert result == {\"status\": \"ok\", \"fee\": 20.0}\n\ndef test_case_10():\n    result = parking_fee(-1)\n    assert result == {\"status\": \"error\", \"fee\": 0.0}",
+    "reference": "def parking_fee(minutes):\n    if minutes < 0:\n        return {'status': 'error', 'fee': 0}\n    minutes = int(minutes // 60 + (minutes % 60 != 0))\n    fee = min(minutes * 2, 20)\n    return {'status': 'ok', 'fee': fee}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "parking",
+    "variant": "cap_30",
+    "rep": 1,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 24.0
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import letter_grade\n\ndef test_case_1():\n    result = letter_grade(95)\n    assert result == {\"status\": \"ok\", \"grade\": \"A\"}\n\ndef test_case_2():\n    result = letter_grade(85)\n    assert result == {\"status\": \"ok\", \"grade\": \"B\"}\n\ndef test_case_3():\n    result = letter_grade(75)\n    assert result == {\"status\": \"ok\", \"grade\": \"C\"}\n\ndef test_case_4():\n    result = letter_grade(65)\n    assert result == {\"status\": \"ok\", \"grade\": \"D\"}\n\ndef test_case_5():\n    result = letter_grade(55)\n    assert result == {\"status\": \"ok\", \"grade\": \"F\"}\n\ndef test_case_6():\n    result = letter_grade(-5)\n    assert result == {\"status\": \"error\", \"grade\": \"N/A\"}\n\ndef test_case_7():\n    result = letter_grade(105)\n    assert result == {\"status\": \"error\", \"grade\": \"N/A\"}",
+    "reference": "def letter_grade(score):\n    if score < 0 or score > 100:\n        return {'status': 'error', 'grade': 'N/A'}\n    elif score >= 90:\n        return {'status': 'ok', 'grade': 'A'}\n    elif score >= 80:\n        return {'status': 'ok', 'grade': 'B'}\n    elif score >= 70:\n        return {'status': 'ok', 'grade': 'C'}\n    elif score >= 60:\n        return {'status': 'ok', 'grade': 'D'}\n    else:\n        return {'status': 'ok', 'grade': 'F'}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "letter_grade",
+    "variant": "clean",
+    "rep": 0,
+    "numeric": false,
+    "flagged": false,
+    "seconds": 19.9
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import letter_grade\n\ndef test_case_1():\n    result = letter_grade(95)\n    assert result == {\"status\": \"ok\", \"grade\": \"A\"}\n\ndef test_case_2():\n    result = letter_grade(85)\n    assert result == {\"status\": \"ok\", \"grade\": \"B\"}\n\ndef test_case_3():\n    result = letter_grade(75)\n    assert result == {\"status\": \"ok\", \"grade\": \"C\"}\n\ndef test_case_4():\n    result = letter_grade(65)\n    assert result == {\"status\": \"ok\", \"grade\": \"D\"}\n\ndef test_case_5():\n    result = letter_grade(55)\n    assert result == {\"status\": \"ok\", \"grade\": \"F\"}\n\ndef test_case_6():\n    result = letter_grade(-10)\n    assert result == {\"status\": \"error\", \"grade\": \"N/A\"}\n\ndef test_case_7():\n    result = letter_grade(110)\n    assert result == {\"status\": \"error\", \"grade\": \"N/A\"}",
+    "reference": "def letter_grade(score):\n    if score < 0 or score > 100:\n        return {'status': 'error', 'grade': 'N/A'}\n    elif score >= 90:\n        return {'status': 'ok', 'grade': 'A'}\n    elif score >= 80:\n        return {'status': 'ok', 'grade': 'B'}\n    elif score >= 70:\n        return {'status': 'ok', 'grade': 'C'}\n    elif score >= 60:\n        return {'status': 'ok', 'grade': 'D'}\n    else:\n        return {'status': 'ok', 'grade': 'F'}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "letter_grade",
+    "variant": "a_exclusive",
+    "rep": 0,
+    "numeric": false,
+    "flagged": false,
+    "seconds": 19.6
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import letter_grade\n\ndef test_case_1():\n    result = letter_grade(95)\n    assert result == {\"status\": \"ok\", \"grade\": \"A\"}\n\ndef test_case_2():\n    result = letter_grade(85)\n    assert result == {\"status\": \"ok\", \"grade\": \"B\"}\n\ndef test_case_3():\n    result = letter_grade(75)\n    assert result == {\"status\": \"ok\", \"grade\": \"C\"}\n\ndef test_case_4():\n    result = letter_grade(65)\n    assert result == {\"status\": \"ok\", \"grade\": \"D\"}\n\ndef test_case_5():\n    result = letter_grade(55)\n    assert result == {\"status\": \"ok\", \"grade\": \"F\"}\n\ndef test_case_6():\n    result = letter_grade(-5)\n    assert result == {\"status\": \"error\", \"grade\": \"N/A\"}\n\ndef test_case_7():\n    result = letter_grade(105)\n    assert result == {\"status\": \"error\", \"grade\": \"N/A\"}",
+    "reference": "def letter_grade(score):\n    if score < 0 or score > 100:\n        return {'status': 'error', 'grade': 'N/A'}\n    elif score >= 90:\n        return {'status': 'ok', 'grade': 'A'}\n    elif score >= 80:\n        return {'status': 'ok', 'grade': 'B'}\n    elif score >= 70:\n        return {'status': 'ok', 'grade': 'C'}\n    elif score >= 60:\n        return {'status': 'ok', 'grade': 'D'}\n    else:\n        return {'status': 'ok', 'grade': 'F'}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "letter_grade",
+    "variant": "b_from_85",
+    "rep": 0,
+    "numeric": false,
+    "flagged": false,
+    "seconds": 19.7
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import letter_grade\n\ndef test_case_1():\n    result = letter_grade(95)\n    assert result == {\"status\": \"ok\", \"grade\": \"A\"}\n\ndef test_case_2():\n    result = letter_grade(85)\n    assert result == {\"status\": \"ok\", \"grade\": \"B\"}\n\ndef test_case_3():\n    result = letter_grade(75)\n    assert result == {\"status\": \"ok\", \"grade\": \"C\"}\n\ndef test_case_4():\n    result = letter_grade(65)\n    assert result == {\"status\": \"ok\", \"grade\": \"D\"}\n\ndef test_case_5():\n    result = letter_grade(55)\n    assert result == {\"status\": \"ok\", \"grade\": \"F\"}\n\ndef test_case_6():\n    result = letter_grade(-5)\n    assert result == {\"status\": \"error\", \"grade\": \"N/A\"}\n\ndef test_case_7():\n    result = letter_grade(105)\n    assert result == {\"status\": \"error\", \"grade\": \"N/A\"}",
+    "reference": "def letter_grade(score):\n    if score < 0 or score > 100:\n        return {'status': 'error', 'grade': 'N/A'}\n    elif score >= 90:\n        return {'status': 'ok', 'grade': 'A'}\n    elif score >= 80:\n        return {'status': 'ok', 'grade': 'B'}\n    elif score >= 70:\n        return {'status': 'ok', 'grade': 'C'}\n    elif score >= 60:\n        return {'status': 'ok', 'grade': 'D'}\n    else:\n        return {'status': 'ok', 'grade': 'F'}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "letter_grade",
+    "variant": "clean",
+    "rep": 1,
+    "numeric": false,
+    "flagged": false,
+    "seconds": 19.7
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import letter_grade\n\ndef test_case_1():\n    result = letter_grade(95)\n    assert result == {\"status\": \"ok\", \"grade\": \"A\"}\n\ndef test_case_2():\n    result = letter_grade(85)\n    assert result == {\"status\": \"ok\", \"grade\": \"B\"}\n\ndef test_case_3():\n    result = letter_grade(75)\n    assert result == {\"status\": \"ok\", \"grade\": \"C\"}\n\ndef test_case_4():\n    result = letter_grade(65)\n    assert result == {\"status\": \"ok\", \"grade\": \"D\"}\n\ndef test_case_5():\n    result = letter_grade(55)\n    assert result == {\"status\": \"ok\", \"grade\": \"F\"}\n\ndef test_case_6():\n    result = letter_grade(-5)\n    assert result == {\"status\": \"error\", \"grade\": \"N/A\"}\n\ndef test_case_7():\n    result = letter_grade(105)\n    assert result == {\"status\": \"error\", \"grade\": \"N/A\"}",
+    "reference": "def letter_grade(score):\n    if score < 0 or score > 100:\n        return {'status': 'error', 'grade': 'N/A'}\n    elif score >= 90:\n        return {'status': 'ok', 'grade': 'A'}\n    elif score >= 80:\n        return {'status': 'ok', 'grade': 'B'}\n    elif score >= 70:\n        return {'status': 'ok', 'grade': 'C'}\n    elif score >= 60:\n        return {'status': 'ok', 'grade': 'D'}\n    else:\n        return {'status': 'ok', 'grade': 'F'}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "letter_grade",
+    "variant": "a_exclusive",
+    "rep": 1,
+    "numeric": false,
+    "flagged": false,
+    "seconds": 19.8
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import letter_grade\n\ndef test_case_1():\n    result = letter_grade(95)\n    assert result == {\"status\": \"ok\", \"grade\": \"A\"}\n\ndef test_case_2():\n    result = letter_grade(85)\n    assert result == {\"status\": \"ok\", \"grade\": \"B\"}\n\ndef test_case_3():\n    result = letter_grade(75)\n    assert result == {\"status\": \"ok\", \"grade\": \"C\"}\n\ndef test_case_4():\n    result = letter_grade(65)\n    assert result == {\"status\": \"ok\", \"grade\": \"D\"}\n\ndef test_case_5():\n    result = letter_grade(55)\n    assert result == {\"status\": \"ok\", \"grade\": \"F\"}\n\ndef test_case_6():\n    result = letter_grade(-5)\n    assert result == {\"status\": \"error\", \"grade\": \"N/A\"}\n\ndef test_case_7():\n    result = letter_grade(105)\n    assert result == {\"status\": \"error\", \"grade\": \"N/A\"}",
+    "reference": "def letter_grade(score):\n    if score < 0 or score > 100:\n        return {'status': 'error', 'grade': 'N/A'}\n    elif score >= 90:\n        return {'status': 'ok', 'grade': 'A'}\n    elif score >= 80:\n        return {'status': 'ok', 'grade': 'B'}\n    elif score >= 70:\n        return {'status': 'ok', 'grade': 'C'}\n    elif score >= 60:\n        return {'status': 'ok', 'grade': 'D'}\n    else:\n        return {'status': 'ok', 'grade': 'F'}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "letter_grade",
+    "variant": "b_from_85",
+    "rep": 1,
+    "numeric": false,
+    "flagged": false,
+    "seconds": 20.3
+  }
+]
