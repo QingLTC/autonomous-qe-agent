@@ -1,0 +1,15 @@
+# runtime files created while the app / evaluation runs
+target_module.py
+test_generated_cases.py
+test_healed_cases.py
+presets.json
+evaluation/results_*.json
+
+# python / tools
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+.venv/
+venv/
+.DS_Store
