@@ -98,29 +98,31 @@ python -m evaluation.run_eval --model llama3.1:8b --repeats 2
 
 ```
 autonomous-qe-agent
-├── app.py                   # Streamlit UI (flow only)
-├── requirements.txt
-├── README.md
-├── .gitignore
-├── .streamlit/
+├──  .streamlit/
 |   └──config.toml           # Light theme
+├── evaluation/
+|   ├──  results/            # Raw results of the runs reported above
+|   |    ├── main_3b.json
+|   |    ├── main_8b.json
+|   |    ├── heldout_3b.json
+|   |    └── heldout_8b.json
+|   ├── __init__.py
+|   ├── cases.py             # Main benchmark (functions, injected bugs, probes)
+|   ├── heldout_cases.py     # Held-out benchmark
+|   └── run_eval.py          # Evaluation harness
 ├── qe_agent/
 |   ├── __init__.py
-|   ├── llm.py               # Model configuration
 |   ├── generate.py          # Test generation (+ simulated contract drift for demos)
+|   ├── llm.py               # Model configuration
+|   ├── presets.py           # Example functions
 |   ├── sandbox.py           # Subprocess execution, pytest, coverage
 |   ├── spec.py              # Docstring spec, reference implementation, numeric comparison
 |   ├── triage.py            # Failure triage, spec audit, healing, spec-aligned export
-|   ├── presets.py           # Example functions
 |   └── ui.py                # Styling and HTML components
-└── evaluation/
-   ├── __init__.py
-   ├── cases.py             # Main benchmark (functions, injected bugs, probes)
-   ├── heldout_cases.py     # Held-out benchmark
-   ├── run_eval.py          # Evaluation harness
-   └──  results/            # Raw results of the runs reported above
-        ├── main_3b.json
-        ├── main_8b.json
-        ├── heldout_3b.json
-        └── heldout_8b.json
+├── .gitignore
+├── LICENSE
+├── README.md
+├── app.py                   # Streamlit UI (flow only)
+└── requirements.txt
+
 ```
