@@ -1,108 +1,76 @@
-"""Spec handling: docstring as the spec, model-written reference implementation, numeric comparison."""
-import ast
-import math
+"""Failure triage, spec audit of passing tests, and test healing."""
+import json
 import re
 
 from . import llm
 from .sandbox import call_in_sandbox
+from .spec import REFERENCE, _is_error, _numbers, extract_call, flat_numbers, get_spec, get_test_expected, same_numbers, show_nums
 
-def extract_function_name(code_text: str):
-    match = re.search(r"def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(", code_text)
-    return match.group(1) if match else None
-
-def extract_call(block, func_name):
-    m = re.search(rf"{re.escape(func_name)}\s*\(", block)
-    if not m:
-        return None
-    depth, i = 1, m.end()
-    while i < len(block) and depth:
-        depth += {"(": 1, ")": -1}.get(block[i], 0)
-        i += 1
-    return " ".join(block[m.end():i - 1].split()) if depth == 0 else None
-
-def _numbers(o):
-    if isinstance(o, dict):
-        return [n for v in o.values() for n in _numbers(v)]
-    if isinstance(o, (list, tuple)):
-        return [n for v in o for n in _numbers(v)]
-    return [o] if isinstance(o, (int, float)) and not isinstance(o, bool) else []
-
-def get_spec(source, func_name):
-    try:
-        for n in ast.walk(ast.parse(source)):
-            if isinstance(n, ast.FunctionDef) and n.name == func_name:
-                return ast.get_docstring(n)
-    except SyntaxError:
-        pass
-    return None
-
-def get_test_expected(block):
-    m = re.search(r"assert\s+result\s*==\s*([\s\S]+)$", block.strip())
-    if not m:
-        return None
-    try:
-        return ast.literal_eval(m.group(1).strip())
-    except Exception:
-        return None
-
-def show_nums(o):
-    if isinstance(o, dict):
-        parts = [f"{k}={v}" for k, v in sorted(o.items(), key=lambda kv: str(kv[0])) if isinstance(v, (int, float)) and not isinstance(v, bool)]
-        return ", ".join(parts) or "(no numeric values)"
-    return repr(o)
-
-def shape_of(v):
+def py_literal(v):
+    """Python literal with double-quoted strings, so rewritten assertions keep the style of the generated tests (cleaner diffs)."""
     if isinstance(v, dict):
-        return {k: shape_of(x) for k, x in v.items()}
-    if isinstance(v, bool):
-        return "<bool>"
-    if isinstance(v, (int, float)):
-        return "<number>"
-    return "<text>"
+        return "{" + ", ".join(f"{py_literal(k)}: {py_literal(x)}" for k, x in v.items()) + "}"
+    if isinstance(v, (list, tuple)):
+        return "[" + ", ".join(py_literal(x) for x in v) + "]"
+    if isinstance(v, str):
+        return '"' + v.replace("\\", "\\\\").replace('"', '\\"') + '"'
+    return repr(v)
 
-def flat_numbers(o):
-    if isinstance(o, dict):
-        return [n for k in sorted(o, key=str) for n in flat_numbers(o[k])]
-    return _numbers(o)
 
-def same_numbers(a, b):
-    """Deterministic comparison of the numeric content (statuses/strings are not compared)."""
-    x, y = flat_numbers(a), flat_numbers(b)
-    return len(x) == len(y) and all(math.isclose(i, j, abs_tol=0.011) for i, j in zip(x, y))
+def analyze_signals(ok, actual, block, source):
+    """Deterministic evidence used as guardrails around the LLM verdict."""
+    sig = {"crash": not ok, "negative": False, "stale_literal": False, "notes": []}
+    if not ok:
+        sig["notes"].append(f"source failed on these inputs: {actual}")
+        return sig
+    if any(n < 0 for n in _numbers(actual)):
+        sig["negative"] = True
+        sig["notes"].append("actual output contains a negative number")
+    asserts = "\n".join(l for l in block.splitlines() if l.strip().startswith("assert"))
+    missing = [s for s in re.findall(r"""["']([^"']+)["']""", asserts) if s not in source]
+    if missing:
+        sig["stale_literal"] = True
+        sig["notes"].append(f"test expects literals that never appear in the source: {missing[:3]}")
+    return sig
 
-def _is_error(o):
-    return isinstance(o, dict) and any(isinstance(v, str) and "error" in v.lower() for v in o.values())
-
-REFERENCE = {"code": None}
-
-def build_reference(source, func_name, spec, test_code):
-    """The model writes an independent reference implementation from the spec ALONE (it never sees the source body)."""
+def llm_triage(source, block, actual, notes):
+    prompt = (
+        "You are a senior QA engineer triaging ONE failing pytest test.\n\n"
+        f"SOURCE UNDER TEST:\n{source}\n\nFAILING TEST:\n{block}\n\n"
+        f"ACTUAL OUTPUT of the source for the test's inputs: {actual!r}\n"
+        f"AUTOMATED SIGNALS: {'; '.join(notes) or 'none'}\n\n"
+        'Decide "fix_test" if the test expectation is outdated, misnamed or simply wrong '
+        "while the source behaviour is plausible and self-consistent. "
+        'Decide "report_bug" if the source output itself looks wrong, inconsistent or unsafe.\n'
+        'Reply with JSON only: {"verdict": "fix_test" or "report_bug", "reason": "one short sentence"}'
+    )
     try:
-        fn = next(n for n in ast.walk(ast.parse(source)) if isinstance(n, ast.FunctionDef) and n.name == func_name)
+        r = llm.chat("Triage (no-spec fallback)",
+            model=llm.MODEL_NAME,
+            messages=[{"role": "system", "content": "You output only a JSON object."},
+                      {"role": "user", "content": prompt}],
+            temperature=0, max_tokens=200)
+        m = re.search(r"\{[\s\S]*\}", r.choices[0].message.content or "")
+        data = json.loads(m.group(0))
+        if data.get("verdict") in ("fix_test", "report_bug"):
+            return data["verdict"], str(data.get("reason", ""))[:200]
     except Exception:
-        return None
-    names = [x.arg for x in fn.args.args]
-    sample_args, sample_out = None, None
+        pass
+    return "needs_review", "model returned no valid verdict"
+
+def audit_passing_tests(source, func_name, test_code, passing):
+    """Passing tests can also encode a bug: compare their expected values with the spec-derived reference."""
+    ref = REFERENCE["code"]
+    if not ref:
+        return []
+    out = []
     for blk in re.findall(r"(def\s+test_[a-zA-Z0-9_]+\s*\(\):[\s\S]*?)(?=\ndef\s+test_|\Z)", test_code):
-        args = extract_call(blk, func_name)
-        if args is None:
+        name = re.match(r"def\s+(test_\w+)", blk).group(1)
+        if name not in passing:
             continue
-        ok, out = call_in_sandbox(source, func_name, args)
-        if ok:
-            sample_args, sample_out = args, out
-            break
-    if sample_args is None:
-        return None
-    shape = f" The returned value must have the same structure and keys as {shape_of(sample_out)!r}, with real values." if isinstance(sample_out, dict) else ""
-    prompt = (f"Write a Python function named {func_name} with parameters ({', '.join(names)}) that implements EXACTLY the specification below. "
-              "Follow every rule literally and do not add behaviour the spec does not state." + shape +
-              " Output only the code, no explanation.\n\nSPEC:\n" + spec)
-    for temp in (0, 0.3):
-        try:
-            r = llm.chat("Write reference from the docstring", model=llm.MODEL_NAME, messages=[{"role": "user", "content": prompt}], temperature=temp, max_tokens=1200)
-            code = llm.clean_code(r.choices[0].message.content or "")
-            if f"def {func_name}" in code and call_in_sandbox(code, func_name, sample_args)[0]:
-                return code
-        except Exception:
-            pass
-    return None
+        args, expected = extract_call(blk, func_name), get_test_expected(blk)
+        if args is None or expected is None or _is_error(expected) or not flat_numbers(expected):
+            continue
+        ok, ref_val = call_in_sandbox(ref, func_name, args)
+        if ok and not same_numbers(expected, ref_val):
+            out.append({"test": name, "verdict": "spec_conflict
