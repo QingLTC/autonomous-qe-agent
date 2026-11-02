@@ -13,6 +13,15 @@ from qe_agent.spec import REFERENCE, build_reference, extract_function_name, get
 from qe_agent.triage import align_to_spec, audit_passing_tests, changed_tests, heal_suite
 from qe_agent.ui import add_log, card, render_diff_card, render_findings, render_log_card, summarize
 
+def _download_kwargs():
+    """Newer Streamlit can skip the rerun a download click would cause (it would wipe the results page)."""
+    try:
+        major, minor = (int(x) for x in st.__version__.split(".")[:2])
+    except ValueError:
+        return {}
+    return {"on_click": "ignore"} if (major, minor) >= (1, 45) else {}
+
+
 st.set_page_config(page_title="Autonomous QE Agent", page_icon="🤖", layout="wide")
 ui.inject_css()
 st.markdown(ui.brand_badge(llm.MODEL_NAME), unsafe_allow_html=True)
@@ -107,6 +116,8 @@ with col_right:
     show_status = lambda *a: ui.show_status(pipeline_status, *a)
     show_progress = lambda n: ui.show_progress(pipeline_status, n)
     show_metrics = lambda *a: ui.show_metrics(metrics_placeholder, *a)
+    calls_slot = st.empty()
+    llm.HOOK = lambda: calls_slot.markdown(ui.render_calls(llm.CALLS), unsafe_allow_html=True)
     if not start_btn:
         show_status("Ready", "Pick a preset or paste a function, then run the analysis.", "info")
 
@@ -134,6 +145,7 @@ if start_btn:
     with open("target_module.py", "w", encoding="utf-8") as f:
         f.write(target_code)
 
+    llm.CALLS.clear()
     log_slot = st.empty()
     LOGS = []
     show_progress(0)
@@ -182,6 +194,7 @@ if start_btn:
             file_name="test_generated_cases.py",
             mime="text/x-python",
             help="Spec-conflicting tests were rewritten to the spec-derived value; they fail until the source bug is fixed." if audit else None,
+            **_download_kwargs(),
         )
         n_pass0 = len(set(re.findall(r"::(test_\w+)\s+PASSED", result.stdout)))
         add_log(LOGS, "Pytest Report & Coverage Log", "", f"{n_pass0} passed", "green", result.stdout)
@@ -233,6 +246,7 @@ if start_btn:
                 file_name="test_healed_cases.py",
                 mime="text/x-python",
                 help="Spec-conflicting tests were rewritten to the spec-derived value; they fail until the source bug is fixed." if audit else None,
+                **_download_kwargs(),
             )
         n_fail1 = len(set(re.findall(r"::(test_\w+)\s+FAILED", final_result.stdout)))
         n_pass1 = len(set(re.findall(r"::(test_\w+)\s+PASSED", final_result.stdout)))
