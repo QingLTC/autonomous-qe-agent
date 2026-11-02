@@ -92,7 +92,7 @@ def report(runs):
         print("   same, without the noise filter (old definition)               :", pct(sum(r["targeted_raw"] for r in mut), len(mut)))
         print("injected bugs flagged at all (incl. unrelated)    :", pct(sum(r["flagged"] for r in mut), len(mut)))
         print("clean versions wrongly flagged (false positives)   :", pct(sum(r["flagged"] for r in cln), len(cln)))
-        print("runs where Llama produced a usable reference       :", pct(sum(r["reference_ok"] for r in sel), len(sel)))
+        print("runs where the model produced a usable reference       :", pct(sum(r["reference_ok"] for r in sel), len(sel)))
         print("runs with 'needs review' items                     :", pct(sum(r["needs_review"] > 0 for r in sel), len(sel)))
     print(f"\nerrors (not counted): {len(runs) - len(ok)}")
 
