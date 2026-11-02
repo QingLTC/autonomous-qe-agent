@@ -26,7 +26,7 @@ st.set_page_config(page_title="Autonomous QE Agent", page_icon="🤖", layout="w
 ui.inject_css()
 st.markdown(ui.brand_badge(llm.MODEL_NAME), unsafe_allow_html=True)
 st.title("Autonomous QE Agent")
-st.caption("Generates tests with Meta Llama, checks them against the written spec, and flags suspected source bugs.")
+st.caption("Generates tests with Meta models, checks them against the written spec, and flags suspected source bugs.")
 
 if "presets" not in st.session_state:
     st.session_state.presets = load_presets()
