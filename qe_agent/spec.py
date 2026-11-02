@@ -99,7 +99,7 @@ def build_reference(source, func_name, spec, test_code):
               " Output only the code, no explanation.\n\nSPEC:\n" + spec)
     for temp in (0, 0.3):
         try:
-            r = llm.client.chat.completions.create(model=llm.MODEL_NAME, messages=[{"role": "user", "content": prompt}], temperature=temp, max_tokens=1200)
+            r = llm.chat("Write reference from the docstring",model=llm.MODEL_NAME, messages=[{"role": "user", "content": prompt}], temperature=temp, max_tokens=1200)
             code = llm.clean_code(r.choices[0].message.content or "")
             if f"def {func_name}" in code and call_in_sandbox(code, func_name, sample_args)[0]:
                 return code
