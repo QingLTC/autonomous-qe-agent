@@ -1,4 +1,4 @@
-"""Spec handling: docstring as the spec, Llama-written reference implementation, numeric comparison."""
+"""Spec handling: docstring as the spec, model-written reference implementation, numeric comparison."""
 import ast
 import math
 import re
@@ -76,7 +76,7 @@ def _is_error(o):
 REFERENCE = {"code": None}
 
 def build_reference(source, func_name, spec, test_code):
-    """Llama writes an independent reference implementation from the spec ALONE (it never sees the source body)."""
+    """The model writes an independent reference implementation from the spec ALONE (it never sees the source body)."""
     try:
         fn = next(n for n in ast.walk(ast.parse(source)) if isinstance(n, ast.FunctionDef) and n.name == func_name)
     except Exception:
@@ -99,7 +99,7 @@ def build_reference(source, func_name, spec, test_code):
               " Output only the code, no explanation.\n\nSPEC:\n" + spec)
     for temp in (0, 0.3):
         try:
-            r = llm.chat("Write reference from the docstring",model=llm.MODEL_NAME, messages=[{"role": "user", "content": prompt}], temperature=temp, max_tokens=1200)
+            r = llm.chat("Write reference from the docstring", model=llm.MODEL_NAME, messages=[{"role": "user", "content": prompt}], temperature=temp, max_tokens=1200)
             code = llm.clean_code(r.choices[0].message.content or "")
             if f"def {func_name}" in code and call_in_sandbox(code, func_name, sample_args)[0]:
                 return code
