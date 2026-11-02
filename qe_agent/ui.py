@@ -84,6 +84,13 @@ code.tn {background:#EFF6FF; padding:1px 6px; border-radius:5px; font-size:.8rem
 .app-toast {position:fixed; top:22px; left:50%; transform:translateX(-50%); z-index:999999; background:#0F172A; color:#fff; padding:10px 18px; border-radius:10px; box-shadow:0 8px 24px rgba(15,23,42,.25); font-size:.92rem; pointer-events:none; opacity:0; animation:toast 3.2s ease forwards;}
 .app-toast.ok {border-left:4px solid #2da44e;} .app-toast.warn {border-left:4px solid #d29922;}
 @keyframes toast {0% {opacity:0; transform:translate(-50%,-10px);} 10%,80% {opacity:1; transform:translate(-50%,0);} 100% {opacity:0; transform:translate(-50%,-6px); visibility:hidden;}}
+.call {display:flex; align-items:center; gap:10px; padding:.55rem .1rem; border-top:1px solid #EEF2F7; font-size:.9rem;}
+.call:first-of-type {border-top:none;}
+.call .dot {width:8px; height:8px; border-radius:50%; background:#1f6feb; animation:pulse 1s infinite;}
+.call.done .dot {background:#2da44e; animation:none;}
+.call .cm {margin-left:auto; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; color:#64748B; font-size:.8rem;}
+.call .cb {color:#1f6feb; font-size:.82rem;}
+@keyframes pulse {0%,100% {opacity:1;} 50% {opacity:.3;}}
 footer {visibility:hidden;}
 </style>
 """
@@ -233,3 +240,17 @@ def render_findings(rows):
                  f"<td class='by'>{esc(who)}</td><td>{chip(r['reason'])}</td></tr>")
     return ("<table class='triage'><thead><tr><th>Test</th><th>Verdict</th><th>Decided by</th><th>Reason</th></tr></thead>"
             f"<tbody>{body}</tbody></table>")
+
+
+def render_calls(calls):
+    """Live list of the Meta model calls made during this run."""
+    rows = ""
+    for c in calls:
+        done = c["seconds"] is not None
+        rows += (f"<div class='call {'done' if done else 'run'}'><span class='dot'></span><span>{esc(c['purpose'])}</span>"
+                 f"<span class='cb'>{esc(c['model'])}</span><span class='cm'>{c['seconds']} s</span></div>" if done else
+                 f"<div class='call run'><span class='dot'></span><span>{esc(c['purpose'])}</span>"
+                 f"<span class='cb'>{esc(c['model'])}</span><span class='cm'>running...</span></div>")
+    n = sum(1 for c in calls if c["seconds"] is not None)
+    total = sum(c["seconds"] for c in calls if c["seconds"] is not None)
+    return card("Model calls", rows, f"{n} done \u00b7 {total:.0f} s", "blue")
