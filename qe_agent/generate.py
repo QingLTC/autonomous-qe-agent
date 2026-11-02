@@ -21,7 +21,7 @@ from target_module import {func_name}
 4. Assert expected values: `assert result == ...`
 5. Output raw executable Python code only. No markdown fences.
 """
-    response = llm.client.chat.completions.create(
+    response = llm.chat("Generate tests",
         model=llm.MODEL_NAME,
         messages=[
             {"role": "system", "content": "You are an automated Python test generator. You output ONLY executable pytest code. Never include markdown backticks or commentary."},
