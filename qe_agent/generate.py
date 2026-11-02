@@ -1,4 +1,4 @@
-"""Test generation with Llama, plus the (simulated) contract-drift helper used for demos."""
+"""Test generation using configurable LLM endpoints, plus the (simulated) contract-drift helper used for demos."""
 import re
 
 from . import llm
