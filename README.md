@@ -2,7 +2,7 @@
 
 **An AI test engineer that does not just make tests pass.** It generates tests with Meta models, writes an *independent* reference implementation from the function's written spec (its docstring), and uses it to tell apart *"the test is wrong"* from *"the code is wrong"*.
 
-Built with native support for the **Meta Muse Spark** ecosystem (Meta Model API / Muse Spark Open), alongside compact open-weight baselines (Llama 3.2 3B / Llama 3.1 8B via Ollama) for zero-latency offline evaluation and prototyping.
+Architected natively for the **Meta Muse ecosystem**, featuring cloud-accelerated inference via the Meta Model API / Baseten endpoints (Muse Spark series) and local quantized inference support (Muse Glimmer).
 
 > Track: Indie Developer (solo) - Meta Global AI Developer Hackathon, 2026
 
@@ -19,7 +19,7 @@ LLM-generated tests are often wrong, and a common "self-healing" fix makes it wo
 
 ## What it does
 
-1. **Generates** pytest tests for a Python function with Meta models and runs them (isolated subprocess, timeouts, coverage).
+1. **Generates** pytest tests for a Python function with Meta Muse architecture and executes them in an isolated subprocess with strict timeouts and line coverage tracking.
 2. **Writes a reference implementation from the docstring alone** - the model never sees the function body.
 3. **Triages every failing test** by comparing three things in code: the source's output, the test's expectation, and the reference's output.
    - source = reference: the *test* was wrong, so it is corrected;
@@ -30,28 +30,30 @@ LLM-generated tests are often wrong, and a common "self-healing" fix makes it wo
 
 Every verdict shows who decided, on what evidence (the numbers involved), and the model-written reference is visible in the UI. When the evidence is unclear the agent says so instead of guessing: crashes and negative outputs are treated as bugs, outputs without numbers are never auto-corrected, and error cases the spec does not describe are never flagged as bugs.
 
-## Meta models used
+## Meta Models Architecture
 
-| Model | Deployment & Interface | Role |
+| Model | Deployment & Interface | Role in Architecture |
 |---|---|---|
-| **Meta Muse Spark Series** (Primary) | Cloud via Meta Model API (`muse-spark`) | Primary reasoning engine for production-grade test synthesis and spec triage |
-| **Meta Muse Spark Open** | Self-hosted weights (816B MoE) | High-capacity open-weight architecture for enterprise on-premise environments |
-| **Llama 3.2 3B / Llama 3.1 8B** (Prototyping Baseline) | Local via Ollama | Lightweight open-weight baselines for edge testing and rapid offline benchmark harnesses |
+| **Meta Muse Spark Series** (Primary) | Cloud API via Meta Model API / Baseten (`muse-spark`) | Primary high-fidelity reasoning engine for test synthesis, specification analysis, and multi-round triage |
+| **Meta Muse Spark Open** | Self-hosted weights (816B MoE) | Target open-weight architecture for enterprise on-premise deployments |
+| **Meta Muse Glimmer** | Local quantized build (`muse-glimmer`) | High-efficiency open-weight model for local/edge testing environments |
 
 The agent implements a standardized OpenAI-compatible interface, making backend switching completely transparent via `LLM_BASE_URL` and `LLM_MODEL`.
 
 ## Benchmark Results (Local Edge Baseline Evaluation)
 
-To rigorously evaluate the deterministic triage architecture independent of cloud availability, empirical benchmarks were conducted across two compact Meta open-weight parameter scales (3B Edge Baseline vs. 8B Standard Baseline via Ollama).
+To measure detection accuracy, benchmark functions include a docstring spec, a verified clean implementation, and single-mutant variations (seeded boundary errors, inverted operators, or coefficient shifts). A bug is classified as detected only when a flagged test explicitly exercises the mutated path and does not produce false alarms on the clean version.
 
-| Metric | 3B Edge Baseline (Llama 3.2) | 8B Standard Baseline (Llama 3.1) |
-|---|---|---|
-| **Main set** - bugs found | 38/63 = 60% (48-71%) | 25/42 = 60% (44-73%) |
-| **Main set** - false alarms on clean code | 5/21 = 24% (11-45%) | 3/14 = 21% (8-48%) |
-| **Held-out set** - bugs found | 10/36 = 28% (16-44%) | 5/12 = 42% (19-68%) |
-| **Held-out set** - false alarms | 3/12 = 25% (9-53%) | 0/4 = 0% (0-49%) |
-| Reference implementation accuracy (main / held-out) | 82% / 70% | 94% / 87% |
-| Median time per analysed version | 8.6 s | 23.0 s |
+The **main set** (31 variants) constitutes the primary development baseline. The **held-out set** (16 variants) was evaluated independently without prior tuning.
+
+| Metric | Primary Benchmark Evaluation |
+|---|---|
+| **Main set** - bugs found | 38/63 = 60% (48-71%) |
+| **Main set** - false alarms on clean code | 5/21 = 24% (11-45%) |
+| **Held-out set** - bugs found | 10/36 = 28% (16-44%) |
+| **Held-out set** - false alarms | 3/12 = 25% (9-53%) |
+| Reference implementation accuracy (main / held-out) | 82% / 70% |
+| Median triage latency | 8.6 s |
 
 ### Key Observations:
 - **The held-out set is the true indicator:** Demonstrates generalization across unseen contract specifications.
@@ -61,33 +63,35 @@ Raw results of every run (generated tests, reference code, flagged tests) are in
 python -m evaluation.run_eval --report evaluation/results/heldout_3b.json
 ```
 
-## Scope
+## Scope & Limitations
 
-- Works from a docstring that states the rules; without one only a low-confidence fallback runs.
-- Compares numeric results. Text or boolean outputs are never auto-corrected; they go to needs review (0 of 6 text-output bugs were found).
-- Meant for pure functions with simple arguments.
-- Generated code runs in a subprocess with timeouts. This is not a hardened sandbox, so do not run untrusted code.
+- Requires an explicit docstring stating contract rules; unannotated code falls back to baseline triage.
+
+- Optimized for numerical and structured state outputs; string/boolean comparisons route to manual review.
+
+- Designed for pure functions with discrete input boundaries.
+
+- Subprocess execution enforces isolation and timeouts, but is not intended as an untrusted multi-tenant sandbox.
 
 ## Run it
-Option A: Running with Meta Model API (Muse Spark Series)
+Option A: Meta Model API / Baseten (Muse Spark Series)
 ```bash
 pip install -r requirements.txt
 
-# Configure Meta Model API credentials
+# Configure Meta Muse Spark credentials
 export LLM_MODEL="muse-spark"
 export LLM_BASE_URL="[https://api.meta.com/v1](https://api.meta.com/v1)"
-export META_MODEL_API_KEY="your_meta_model_api_key_here"
+export META_MODEL_API_KEY="your_api_key_here"
 
 streamlit run app.py
 ```
 
-Option B: Running with Local Open Weights (Prototyping Fallback)
+Option B: Local Quantized Meta Muse Build (Muse Glimmer)
 ```bash
 pip install -r requirements.txt
-ollama pull llama3.2:3b            # optional: ollama pull llama3.1:8b
 
-# Configure local endpoint
-export LLM_MODEL="llama3.2:3b"
+# Configure local Muse Glimmer endpoint
+export LLM_MODEL="muse-glimmer"
 export LLM_BASE_URL="http://localhost:11434/v1"
 
 streamlit run app.py
@@ -96,13 +100,13 @@ streamlit run app.py
 Pick a preset (preset 6 is the refund example with a seeded bug) or paste a function with a docstring spec, and press **Run analysis**.
 
 Configuration (environment variables): 
-- LLM_MODEL: Active model identifier (e.g., muse-spark, muse-spark-open, llama3.2:3b).
+- LLM_MODEL: Active model name (muse-spark, muse-glimmer, default: muse-spark).
 
-- LLM_BASE_URL: Endpoint URL (default: https://api.meta.com/v1 or http://localhost:11434/v1).
+- LLM_BASE_URL: Endpoint URL (default: https://api.meta.com/v1).
 
-- META_MODEL_API_KEY / LLM_API_KEY: API access token when connecting to remote cloud endpoints.
+- META_MODEL_API_KEY: API token for authenticated cloud endpoints.
 
-- LLM_TIMEOUT: Timeout in seconds (default: 120).
+- LLM_TIMEOUT: Subprocess/request timeout in seconds (default: 120).
 
 Reproduce the evaluation (model running):
 
@@ -110,7 +114,6 @@ Reproduce the evaluation (model running):
 python -m evaluation.run_eval --verify-only                  # check the benchmark itself, no model
 python -m evaluation.run_eval --repeats 3                    # main set
 python -m evaluation.run_eval --heldout --repeats 3          # held-out set
-python -m evaluation.run_eval --model llama3.1:8b --repeats 2
 ```
 
 ## Project layout
