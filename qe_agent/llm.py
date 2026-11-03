@@ -3,9 +3,9 @@ import os
 import time
 from openai import OpenAI
 
-BASE_URL = os.getenv("LLM_BASE_URL", "http://localhost:11434/v1")
-API_KEY = os.getenv("LLM_API_KEY", "ollama")
-MODEL_NAME = os.getenv("LLM_MODEL", "llama3.2:3b")
+BASE_URL = os.getenv("LLM_BASE_URL", "https://api.meta.com/v1")
+API_KEY = os.getenv("META_MODEL_API_KEY", os.getenv("BASETEN_API_KEY", os.getenv("LLM_API_KEY", "")))
+MODEL_NAME = os.getenv("LLM_MODEL", "muse-spark")
 MAX_TOKENS = os.getenv("LLM_MAX_TOKENS")                # optional override; reasoning models spend tokens on thinking
 REASONING_EFFORT = os.getenv("LLM_REASONING_EFFORT")    # optional, e.g. low / medium / high
 TIMEOUT = float(os.getenv("LLM_TIMEOUT", "120"))  # seconds; the library default (10 min x 3 attempts) can freeze a run
