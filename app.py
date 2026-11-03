@@ -27,6 +27,9 @@ ui.inject_css()
 st.markdown(ui.brand_badge(llm.MODEL_NAME), unsafe_allow_html=True)
 st.title("Autonomous QE Agent")
 st.caption(f"Generates tests with {ui.model_label(llm.MODEL_NAME)}, checks them against the written spec, and flags suspected source bugs.")
+if not llm.is_configured():
+    st.error("No model configured. Set LLM_API_KEY (and, if needed, LLM_BASE_URL and LLM_MODEL) before starting the app. See the README.")
+    st.stop()
 
 if "presets" not in st.session_state:
     st.session_state.presets = load_presets()
