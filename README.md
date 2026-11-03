@@ -4,7 +4,7 @@
  
 > Track: Indie Developer (solo) - Meta Global AI Developer Hackathon, 2026
 
-<img width="1567" height="837" alt="image" src="https://github.com/user-attachments/assets/bdeff651-8898-4d7f-80bd-e7c2e7a58e3c" />
+<img width="1547" height="830" alt="image" src="https://github.com/user-attachments/assets/3296d7db-cb32-4764-9539-11cdab4423e5" />
 <img width="1557" height="637" alt="image" src="https://github.com/user-attachments/assets/56f73e9d-b110-4b4b-bf42-6f1f0086ecb4" />
 <img width="1557" height="547" alt="image" src="https://github.com/user-attachments/assets/88e1968e-fcce-43a2-bddb-7b83c5102273" />
 
