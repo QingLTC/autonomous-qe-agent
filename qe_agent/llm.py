@@ -1,23 +1,54 @@
-"""Model configuration: any OpenAI-compatible endpoint (defaults to a local Ollama server)."""
+"""Model configuration. Every model call goes through chat().
+
+The endpoint is any OpenAI-compatible API. Defaults: Muse Spark Open (a Meta open-weight model) on Baseten;
+set LLM_API_KEY. To use a Meta model on your own machine (e.g. Muse Glimmer), point LLM_BASE_URL and LLM_MODEL
+at a local OpenAI-compatible server. Only Meta models are called at runtime.
+"""
 import os
 import time
 from openai import OpenAI
 
-BASE_URL = os.getenv("LLM_BASE_URL", "https://api.meta.com/v1")
-API_KEY = os.getenv("META_MODEL_API_KEY", os.getenv("BASETEN_API_KEY", os.getenv("LLM_API_KEY", "")))
-MODEL_NAME = os.getenv("LLM_MODEL", "muse-spark")
+BASE_URL = os.getenv("LLM_BASE_URL", "https://inference.baseten.co/v1")
+API_KEY = os.getenv("LLM_API_KEY", "")
+MODEL_NAME = os.getenv("LLM_MODEL", "meta-models/muse-spark-open")
 MAX_TOKENS = os.getenv("LLM_MAX_TOKENS")                # optional override; reasoning models spend tokens on thinking
 REASONING_EFFORT = os.getenv("LLM_REASONING_EFFORT")    # optional, e.g. low / medium / high
-TIMEOUT = float(os.getenv("LLM_TIMEOUT", "120"))  # seconds; the library default (10 min x 3 attempts) can freeze a run
-client = OpenAI(base_url=BASE_URL, api_key=API_KEY, timeout=TIMEOUT, max_retries=1)
+TIMEOUT = float(os.getenv("LLM_TIMEOUT", "300"))        # seconds
+client = OpenAI(base_url=BASE_URL, api_key=API_KEY or "not-set", timeout=TIMEOUT, max_retries=1)
+
+
+def is_configured():
+    """True when an API key is set, or the endpoint is a local server (which needs none)."""
+    return bool(API_KEY) or any(h in BASE_URL for h in ("localhost", "127.0.0.1"))
+
 
 def clean_code(raw_output: str) -> str:
     lines = [l for l in raw_output.splitlines() if not l.strip().startswith("```")]
     return "\n".join(lines).strip()
 
 
+
 CALLS = []   # one record per model call: purpose, model, seconds (None while running)
 HOOK = None  # optional callback (the UI sets it to redraw the call list live)
+
+
+def _create(kwargs):
+    """Call the endpoint; if it rejects an optional parameter, drop/rename it and retry (reasoning models differ)."""
+    kwargs = dict(kwargs)
+    for _ in range(4):
+        try:
+            return client.chat.completions.create(**kwargs)
+        except Exception as e:
+            msg = str(e).lower()
+            if "reasoning" in msg and kwargs.get("extra_body", {}).get("reasoning_effort"):
+                kwargs["extra_body"] = {k: v for k, v in kwargs["extra_body"].items() if k != "reasoning_effort"}
+            elif "temperature" in msg and "temperature" in kwargs:
+                kwargs.pop("temperature")
+            elif "max_tokens" in msg and "max_tokens" in kwargs:
+                kwargs["max_completion_tokens"] = kwargs.pop("max_tokens")
+            else:
+                raise
+    return client.chat.completions.create(**kwargs)
 
 
 def chat(purpose, **kwargs):
@@ -32,13 +63,7 @@ def chat(purpose, **kwargs):
     if REASONING_EFFORT:
         kwargs["extra_body"] = {**kwargs.get("extra_body", {}), "reasoning_effort": REASONING_EFFORT}
     try:
-        try:
-            return client.chat.completions.create(**kwargs)
-        except Exception as e:  # some endpoints reject reasoning_effort: retry once without it
-            if REASONING_EFFORT and "reasoning" in str(e).lower():
-                kwargs["extra_body"].pop("reasoning_effort", None)
-                return client.chat.completions.create(**kwargs)
-            raise
+        return _create(kwargs)
     finally:
         rec["seconds"] = round(time.time() - t0, 1)
         if HOOK:
@@ -46,6 +71,5 @@ def chat(purpose, **kwargs):
 
 
 def family(model=None):
-    """'Llama', 'Muse' or 'Model' - used for labels in the UI."""
-    m = (model or MODEL_NAME).lower()
-    return "Muse" if "muse" in m else "Llama" if "llama" in m else "Model"
+    """'Muse' or 'Model' - used for labels in the UI."""
+    return "Muse" if "muse" in (model or MODEL_NAME).lower() else "Model"
