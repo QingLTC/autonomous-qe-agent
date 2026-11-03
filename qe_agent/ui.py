@@ -105,8 +105,14 @@ def inject_css():
     st.markdown(CSS, unsafe_allow_html=True)
 
 
+def model_label(model):
+    m = model.lower()
+    return "Meta Muse" if "muse" in m else "Meta Llama" if "llama" in m else "an LLM"
+
+
 def brand_badge(model):
-    return f"<div class='brand'><i></i>Meta Model Ecosystem · {html.escape(model)}</div>"
+    lead = "Powered by " + (model_label(model) + " · " if model_label(model) != "an LLM" else "")
+    return f"<div class='brand'><i></i>{lead}{html.escape(model)}</div>"
 
 
 def toast(msg, icon):
@@ -198,7 +204,7 @@ def show_status(slot, title, subtitle, tone):
 
 def show_progress(slot, active):
     names = ["Generate tests", "Run & verify", "Triage & audit"]
-    subs = ["Model synthesizes pytest cases", "Sandboxed pytest + spec reference", "Compare against the spec"]
+    subs = ["The model writes pytest cases", "Sandboxed pytest + spec reference", "Compare against the spec"]
     cards = "".join(f"<div class='step {'done' if i < active else 'on' if i == active else ''}'><b>{names[i]}</b>{subs[i]}</div>" for i in range(3))
     slot.markdown(f"<div class='steps'>{cards}</div>", unsafe_allow_html=True)
 
