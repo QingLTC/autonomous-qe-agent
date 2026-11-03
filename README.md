@@ -8,7 +8,7 @@
 <img width="1557" height="637" alt="image" src="https://github.com/user-attachments/assets/56f73e9d-b110-4b4b-bf42-6f1f0086ecb4" />
 <img width="1557" height="547" alt="image" src="https://github.com/user-attachments/assets/88e1968e-fcce-43a2-bddb-7b83c5102273" />
 
-*Example run on preset 6; results vary between runs.*
+*Example run on preset 6.*
 
 
 ## Why
