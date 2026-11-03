@@ -108,13 +108,12 @@ autonomous-qe-agent
 |   └──config.toml           # Light theme
 ├── evaluation/
 |   ├──  results/            # Raw results of the runs reported above
-|   |    ├── main_3b.json
-|   |    ├── main_8b.json
-|   |    ├── heldout_3b.json
-|   |    └── heldout_8b.json
+|   |    ├── heldout_muse.json
+|   |    └── main_muse.json
 |   ├── __init__.py
 |   ├── cases.py             # Main benchmark (functions, injected bugs, probes)
 |   ├── heldout_cases.py     # Held-out benchmark
+|   ├── make_table.py        # Markdown results table from saved runs
 |   └── run_eval.py          # Evaluation harness
 ├── qe_agent/
 |   ├── __init__.py
