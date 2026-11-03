@@ -6,7 +6,7 @@ Architected natively for the **Meta Muse ecosystem**, featuring cloud-accelerate
 
 > Track: Indie Developer (solo) - Meta Global AI Developer Hackathon, 2026
 
-<img width="1272" height="907" alt="image" src="https://github.com/user-attachments/assets/5dd224f1-390f-4eda-b7ed-0f4749d61450" />
+<img width="1280" height="921" alt="image" src="https://github.com/user-attachments/assets/d8af61ea-bc65-4ecb-b39c-0e76bd0bbf15" />
 <img width="1277" height="697" alt="image" src="https://github.com/user-attachments/assets/7c809b71-1733-441b-8f29-cf3c518cfbfe" />
 <img width="1277" height="706" alt="image" src="https://github.com/user-attachments/assets/e5089832-9888-4f65-bd11-b5ceb33f3537" />
 
