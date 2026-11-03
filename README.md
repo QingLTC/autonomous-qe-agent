@@ -111,8 +111,6 @@ autonomous-qe-agent
 |   └──config.toml           # Light theme
 ├── evaluation/
 |   ├──  results/            # Raw results of the runs reported above
-|   |    ├── heldout_muse.json
-|   |    └── main_muse.json
 |   ├── __init__.py
 |   ├── cases.py             # Main benchmark (functions, injected bugs, probes)
 |   ├── heldout_cases.py     # Held-out benchmark
