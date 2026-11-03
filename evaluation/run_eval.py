@@ -4,7 +4,7 @@ Usage (from the project root, with the model endpoint running and pytest + pytes
     python -m evaluation.run_eval --repeats 3
     python -m evaluation.run_eval --cases refund,parking --repeats 1
     python -m evaluation.run_eval --verify-only          # no model needed
-    python -m evaluation.run_eval --report evaluation/results/main_3b.json   # summary of a saved run, no model needed
+    python -m evaluation.run_eval --report evaluation/results/main_muse.json   # summary of a saved run, no model needed
 """
 import argparse
 import json
