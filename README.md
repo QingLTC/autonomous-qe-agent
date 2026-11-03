@@ -65,33 +65,36 @@ python -m evaluation.run_eval --report evaluation/results/heldout_muse.json
 - Generated code runs in a subprocess with timeouts. This is **not a hardened sandbox**, so do not run untrusted code.
 
 ## Run it
- 
+
 ```bash
 pip install -r requirements.txt
 ```
  
-Set the model endpoint with environment variables (Windows `set`, Linux/macOS `export`), then start the app. Example with Muse Spark Open on Baseten:
+The app talks to any OpenAI-compatible endpoint that serves a Meta model; nothing else is called. The results above and the demo video were produced with **Muse Glimmer 30B (4-bit GGUF) served by llama.cpp** on a rented RTX 5090 (32 GB), reached from my laptop through an SSH tunnel. The model page recommends 24 GB for this quantization; we did not test a smaller card.
  
-```
-set LLM_API_KEY=<your Baseten API key>
-set LLM_BASE_URL=https://inference.baseten.co/v1
-set LLM_MODEL=meta-models/muse-spark-open
-set LLM_MAX_TOKENS=8000
-streamlit run app.py
-```
-
-Never commit an API key; the app reads it only from the environment. Other settings: `LLM_TIMEOUT` (seconds, default 300) and `LLM_REASONING_EFFORT` (for reasoning models). For an open-weight Meta model served by your own OpenAI-compatible server, for example Muse Glimmer 30B with llama.cpp (a 24 GB GPU is enough for a 4-bit build with a short context):
+**1. Start the model server** (needs llama.cpp build b10353 or newer and a GPU with enough memory):
  
 ```
 llama-server -hf meta-models/Muse-Glimmer-30B-GGUF:Q4_K_M --jinja -ngl 99 -c 32768 --host 127.0.0.1 --port 8080 --chat-template-kwargs '{"reasoning_strength":"low"}'
-set LLM_BASE_URL=http://localhost:8080/v1
-set LLM_MODEL=meta-models/Muse-Glimmer-30B-GGUF:Q4_K_M
 ```
  
-No API key is needed for localhost. The server can run on a rented GPU and be reached from your machine through an SSH tunnel (`ssh -L 8080:localhost:8080 ...`).
+On a remote GPU, forward the port to your machine: `ssh -L 8080:localhost:8080 -p <port> root@<host>`.
+ 
+**2. Point the app at it and start it.** Windows cmd:
+ 
+```
+set LLM_BASE_URL=http://localhost:8080/v1
+set LLM_MODEL=meta-models/Muse-Glimmer-30B-GGUF:Q4_K_M
+set LLM_MAX_TOKENS=8000
+streamlit run app.py
+```
+ 
+PowerShell uses `$env:LLM_BASE_URL="..."` instead of `set`; Linux/macOS use `export`. No API key is needed for localhost. If port 8080 is already used, pick another port in both places.
+ 
+**Other Meta endpoints.** Any hosted Meta model works the same way, for example Muse Spark Open through an API provider: set `LLM_API_KEY`, `LLM_BASE_URL` and `LLM_MODEL` (the default model name is `meta-models/muse-spark-open`). This path was not used for the results above. Never commit an API key; the app reads it only from the environment. Other settings: `LLM_TIMEOUT` (seconds, default 300) and `LLM_REASONING_EFFORT` (for endpoints that support it).
  
 Pick a preset (preset 6 is the refund example with a seeded bug) or paste a function with a docstring spec, then press **Run analysis**.
-
+ 
 Reproduce the evaluation (model configured as above):
  
 ```bash
