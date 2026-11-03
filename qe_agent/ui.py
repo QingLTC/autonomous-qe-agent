@@ -107,11 +107,11 @@ def inject_css():
 
 def model_label(model):
     m = model.lower()
-    return "Meta Muse" if "muse" in m else "Meta Llama" if "llama" in m else "an LLM"
+    return "Meta Muse" if "muse" in m else "a Meta model"
 
 
 def brand_badge(model):
-    lead = "Powered by " + (model_label(model) + " · " if model_label(model) != "an LLM" else "")
+    lead = "Powered by " + (model_label(model) + " · " if model_label(model) != "a Meta model" else "")
     return f"<div class='brand'><i></i>{lead}{html.escape(model)}</div>"
 
 
