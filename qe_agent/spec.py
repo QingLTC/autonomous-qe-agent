@@ -1,4 +1,4 @@
-"""Spec handling: docstring as the spec, Muse-Spark-written reference implementation, numeric comparison."""
+"""Spec handling: docstring as the spec, model-written reference implementation, numeric comparison."""
 import ast
 import math
 import re
@@ -76,7 +76,7 @@ def _is_error(o):
 REFERENCE = {"code": None}
 
 def build_reference(source, func_name, spec, test_code):
-    """Muse-Spark writes an independent reference implementation from the spec ALONE (it never sees the source body)."""
+    """The model writes an independent reference implementation from the spec ALONE (it never sees the source body)."""
     try:
         fn = next(n for n in ast.walk(ast.parse(source)) if isinstance(n, ast.FunctionDef) and n.name == func_name)
     except Exception:
