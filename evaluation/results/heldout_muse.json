@@ -1,0 +1,559 @@
+[
+  {
+    "n_pass": 9,
+    "n_fail": 1,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import tax_due\n\ndef test_negative_income_error():\n    result = tax_due(-1)\n    assert result == {\"status\": \"error\", \"tax\": 0.0}\n\ndef test_negative_income_large_error():\n    result = tax_due(-100000)\n    assert result == {\"status\": \"error\", \"tax\": 0.0}\n\ndef test_zero_income():\n    result = tax_due(0)\n    assert result == {\"status\": \"ok\", \"tax\": 0.0}\n\ndef test_income_at_first_threshold():\n    result = tax_due(10000)\n    assert result == {\"status\": \"ok\", \"tax\": 0.0}\n\ndef test_income_within_first_band():\n    result = tax_due(15000)\n    assert result == {\"status\": \"ok\", \"tax\": 500.0}\n\ndef test_income_at_second_threshold():\n    result = tax_due(40000)\n    assert result == {\"status\": \"ok\", \"tax\": 3000.0}\n\ndef test_income_in_second_band():\n    result = tax_due(50000)\n    assert result == {\"status\": \"ok\", \"tax\": 5000.0}\n\ndef test_income_above_second_band():\n    result = tax_due(100000)\n    assert result == {\"status\": \"ok\", \"tax\": 14000.0}\n\ndef test_income_just_above_first_threshold():\n    result = tax_due(10001)\n    assert result == {\"status\": \"ok\", \"tax\": 0.1}\n\ndef test_income_fractional_rounding():\n    result = tax_due(12345)\n    assert result == {\"status\": \"ok\", \"tax\": 234.5}",
+    "reference": "def tax_due(income):\n    if income < 0:\n        return {'status': 'error', 'tax': 0}\n    tax = 0.0\n    if income > 10000:\n        taxable = min(income, 40000) - 10000\n        tax += taxable * 0.10\n    if income > 40000:\n        tax += (income - 40000) * 0.20\n    return {'status': 'ok', 'tax': tax}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "tax",
+    "variant": "clean",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 14.8
+  },
+  {
+    "n_pass": 8,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_income_below_second_band",
+        "verdict": "spec_conflict",
+        "args": "20000",
+        "spec_value": {
+          "status": "ok",
+          "tax": 1000.0
+        },
+        "reason": "passes, but the test expects tax=800.0 while the spec-derived reference returns tax=1000.0"
+      },
+      {
+        "test": "test_income_at_second_threshold",
+        "verdict": "spec_conflict",
+        "args": "40000",
+        "spec_value": {
+          "status": "ok",
+          "tax": 3000.0
+        },
+        "reason": "passes, but the test expects tax=2800.0 while the spec-derived reference returns tax=3000.0"
+      },
+      {
+        "test": "test_income_above_second_band",
+        "verdict": "spec_conflict",
+        "args": "50000",
+        "spec_value": {
+          "status": "ok",
+          "tax": 5000.0
+        },
+        "reason": "passes, but the test expects tax=4800.0 while the spec-derived reference returns tax=5000.0"
+      },
+      {
+        "test": "test_income_exactly_12000",
+        "verdict": "spec_conflict",
+        "args": "12000",
+        "spec_value": {
+          "status": "ok",
+          "tax": 200.0
+        },
+        "reason": "passes, but the test expects tax=0.0 while the spec-derived reference returns tax=200.0"
+      },
+      {
+        "test": "test_large_income",
+        "verdict": "spec_conflict",
+        "args": "100000",
+        "spec_value": {
+          "status": "ok",
+          "tax": 15000.0
+        },
+        "reason": "passes, but the test expects tax=14800.0 while the spec-derived reference returns tax=15000.0"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import tax_due\n\ndef test_negative_income():\n    result = tax_due(-1)\n    assert result == {\"status\": \"error\", \"tax\": 0.0}\n\ndef test_zero_income():\n    result = tax_due(0)\n    assert result == {\"status\": \"ok\", \"tax\": 0.0}\n\ndef test_income_at_first_threshold():\n    result = tax_due(10000)\n    assert result == {\"status\": \"ok\", \"tax\": 0.0}\n\ndef test_income_below_second_band():\n    result = tax_due(20000)\n    assert result == {\"status\": \"ok\", \"tax\": 800.0}\n\ndef test_income_at_second_threshold():\n    result = tax_due(40000)\n    assert result == {\"status\": \"ok\", \"tax\": 2800.0}\n\ndef test_income_above_second_band():\n    result = tax_due(50000)\n    assert result == {\"status\": \"ok\", \"tax\": 4800.0}\n\ndef test_income_exactly_12000():\n    result = tax_due(12000)\n    assert result == {\"status\": \"ok\", \"tax\": 0.0}\n\ndef test_large_income():\n    result = tax_due(100000)\n    assert result == {\"status\": \"ok\", \"tax\": 14800.0}",
+    "reference": "def tax_due(income):\n    if income < 0:\n        return {'status': 'error', 'tax': 0}\n    tax = 0.0\n    if income > 10000:\n        taxable = min(income, 40000) - 10000\n        tax += taxable * 0.10\n    if income > 40000:\n        tax += (income - 40000) * 0.20\n    return {'status': 'ok', 'tax': tax}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "tax",
+    "variant": "untaxed_12000",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 18.9
+  },
+  {
+    "n_pass": 11,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import tax_due\n\ndef test_negative_income():\n    result = tax_due(-1)\n    assert result == {\"status\": \"error\", \"tax\": 0.0}\n\ndef test_negative_income_large():\n    result = tax_due(-100000)\n    assert result == {\"status\": \"error\", \"tax\": 0.0}\n\ndef test_zero_income():\n    result = tax_due(0)\n    assert result == {\"status\": \"ok\", \"tax\": 0.0}\n\ndef test_income_at_first_threshold():\n    result = tax_due(10000)\n    assert result == {\"status\": \"ok\", \"tax\": 0.0}\n\ndef test_income_within_first_band():\n    result = tax_due(20000)\n    assert result == {\"status\": \"ok\", \"tax\": round((20000 - 10000) * 0.15, 2)}\n\ndef test_income_at_second_threshold():\n    result = tax_due(40000)\n    assert result == {\"status\": \"ok\", \"tax\": round((40000 - 10000) * 0.15, 2)}\n\ndef test_income_above_second_threshold():\n    result = tax_due(50000)\n    expected_tax = round((40000 - 10000) * 0.15 + (50000 - 40000) * 0.20, 2)\n    assert result == {\"status\": \"ok\", \"tax\": expected_tax}\n\ndef test_income_high():\n    result = tax_due(100000)\n    expected_tax = round((40000 - 10000) * 0.15 + (100000 - 40000) * 0.20, 2)\n    assert result == {\"status\": \"ok\", \"tax\": expected_tax}\n\ndef test_income_just_above_first_threshold():\n    result = tax_due(10001)\n    assert result == {\"status\": \"ok\", \"tax\": round(1 * 0.15, 2)}\n\ndef test_income_just_above_second_threshold():\n    result = tax_due(40001)\n    expected_tax = round((40000 - 10000) * 0.15 + 1 * 0.20, 2)\n    assert result == {\"status\": \"ok\", \"tax\": expected_tax}\n\ndef test_status_ok_for_non_negative():\n    result = tax_due(12345)\n    assert result[\"status\"] == \"ok\"\n    assert isinstance(result[\"tax\"], float)",
+    "reference": "def tax_due(income):\n    if income < 0:\n        return {'status': 'error', 'tax': 0}\n    tax = 0.0\n    if income > 10000:\n        taxable = min(income, 40000) - 10000\n        tax += taxable * 0.10\n    if income > 40000:\n        tax += (income - 40000) * 0.20\n    return {'status': 'ok', 'tax': tax}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "tax",
+    "variant": "mid_rate_15pct",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 20.6
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 1,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_income_above_second_threshold",
+        "verdict": "spec_conflict",
+        "args": "50000",
+        "spec_value": {
+          "status": "ok",
+          "tax": 5000.0
+        },
+        "reason": "passes, but the test expects tax=5500.0 while the spec-derived reference returns tax=5000.0"
+      }
+    ],
+    "needs_review": 1,
+    "tests": "import pytest\nfrom target_module import tax_due\n\ndef test_negative_income_error():\n    result = tax_due(-1)\n    assert result == {\"status\": \"error\", \"tax\": 0.0}\n\ndef test_zero_income():\n    result = tax_due(0)\n    assert result == {\"status\": \"ok\", \"tax\": 0.0}\n\ndef test_income_at_first_threshold():\n    result = tax_due(10000)\n    assert result == {\"status\": \"ok\", \"tax\": 0.0}\n\ndef test_income_within_first_band():\n    result = tax_due(20000)\n    assert result == {\"status\": \"ok\", \"tax\": 1000.0}\n\ndef test_income_at_second_threshold():\n    result = tax_due(40000)\n    assert result == {\"status\": \"ok\", \"tax\": 3000.0}\n\ndef test_income_above_second_threshold():\n    result = tax_due(50000)\n    assert result == {\"status\": \"ok\", \"tax\": 5500.0}\n\ndef test_income_just_above_first_threshold():\n    result = tax_due(10001)\n    assert result == {\"status\": \"ok\", \"tax\": 0.1}\n\ndef test_large_income():\n    result = tax_due(100000)\n    assert result == {\"status\": \"ok\", \"tax\": 20500.0}",
+    "reference": "def tax_due(income):\n    if income < 0:\n        return {'status': 'error', 'tax': 0}\n    tax = 0.0\n    if income > 10000:\n        taxable = min(income, 40000) - 10000\n        tax += taxable * 0.10\n    if income > 40000:\n        tax += (income - 40000) * 0.20\n    return {'status': 'ok', 'tax': tax}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "tax",
+    "variant": "top_rate_25pct",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 15.9
+  },
+  {
+    "n_pass": 10,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import data_plan_cost\n\ndef test_case_1():\n    result = data_plan_cost(-1)\n    assert result == {\"status\": \"error\", \"cost\": 0.0}\n\ndef test_case_2():\n    result = data_plan_cost(0)\n    assert result == {\"status\": \"ok\", \"cost\": 20.0}\n\ndef test_case_3():\n    result = data_plan_cost(5)\n    assert result == {\"status\": \"ok\", \"cost\": 20.0}\n\ndef test_case_4():\n    result = data_plan_cost(5.1)\n    assert result == {\"status\": \"ok\", \"cost\": 23.0}\n\ndef test_case_5():\n    result = data_plan_cost(6)\n    assert result == {\"status\": \"ok\", \"cost\": 23.0}\n\ndef test_case_6():\n    result = data_plan_cost(10)\n    assert result == {\"status\": \"ok\", \"cost\": 35.0}\n\ndef test_case_7():\n    result = data_plan_cost(15)\n    assert result == {\"status\": \"ok\", \"cost\": 50.0}\n\ndef test_case_8():\n    result = data_plan_cost(15.1)\n    assert result == {\"status\": \"ok\", \"cost\": 50.0}\n\ndef test_case_9():\n    result = data_plan_cost(100)\n    assert result == {\"status\": \"ok\", \"cost\": 50.0}\n\ndef test_case_10():\n    result = data_plan_cost(4.9)\n    assert result == {\"status\": \"ok\", \"cost\": 20.0}",
+    "reference": "import math\n\ndef data_plan_cost(gb_used):\n    if gb_used < 0:\n        return {'status': 'error', 'cost': 0}\n    if gb_used <= 5:\n        cost = 20.0\n    else:\n        extra_gb = math.ceil(gb_used - 5)\n        cost = 20.0 + extra_gb * 3.0\n    if cost > 50.0:\n        cost = 50.0\n    return {'status': 'ok', 'cost': cost}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "data_plan",
+    "variant": "clean",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 14.1
+  },
+  {
+    "n_pass": 10,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_4",
+        "verdict": "spec_conflict",
+        "args": "6",
+        "spec_value": {
+          "status": "ok",
+          "cost": 23.0
+        },
+        "reason": "passes, but the test expects cost=20.0 while the spec-derived reference returns cost=23.0"
+      },
+      {
+        "test": "test_case_5",
+        "verdict": "spec_conflict",
+        "args": "6.1",
+        "spec_value": {
+          "status": "ok",
+          "cost": 26.0
+        },
+        "reason": "passes, but the test expects cost=23.0 while the spec-derived reference returns cost=26.0"
+      },
+      {
+        "test": "test_case_6",
+        "verdict": "spec_conflict",
+        "args": "7",
+        "spec_value": {
+          "status": "ok",
+          "cost": 26.0
+        },
+        "reason": "passes, but the test expects cost=23.0 while the spec-derived reference returns cost=26.0"
+      },
+      {
+        "test": "test_case_7",
+        "verdict": "spec_conflict",
+        "args": "15",
+        "spec_value": {
+          "status": "ok",
+          "cost": 50.0
+        },
+        "reason": "passes, but the test expects cost=47.0 while the spec-derived reference returns cost=50.0"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import data_plan_cost\n\ndef test_case_1():\n    result = data_plan_cost(-1)\n    assert result == {\"status\": \"error\", \"cost\": 0.0}\n\ndef test_case_2():\n    result = data_plan_cost(0)\n    assert result == {\"status\": \"ok\", \"cost\": 20.0}\n\ndef test_case_3():\n    result = data_plan_cost(5)\n    assert result == {\"status\": \"ok\", \"cost\": 20.0}\n\ndef test_case_4():\n    result = data_plan_cost(6)\n    assert result == {\"status\": \"ok\", \"cost\": 20.0}\n\ndef test_case_5():\n    result = data_plan_cost(6.1)\n    assert result == {\"status\": \"ok\", \"cost\": 23.0}\n\ndef test_case_6():\n    result = data_plan_cost(7)\n    assert result == {\"status\": \"ok\", \"cost\": 23.0}\n\ndef test_case_7():\n    result = data_plan_cost(15)\n    assert result == {\"status\": \"ok\", \"cost\": 47.0}\n\ndef test_case_8():\n    result = data_plan_cost(15.1)\n    assert result == {\"status\": \"ok\", \"cost\": 50.0}\n\ndef test_case_9():\n    result = data_plan_cost(20)\n    assert result == {\"status\": \"ok\", \"cost\": 50.0}\n\ndef test_case_10():\n    result = data_plan_cost(100)\n    assert result == {\"status\": \"ok\", \"cost\": 50.0}",
+    "reference": "import math\n\ndef data_plan_cost(gb_used):\n    if gb_used < 0:\n        return {'status': 'error', 'cost': 0}\n    if gb_used <= 5:\n        cost = 20.0\n    else:\n        extra_gb = math.ceil(gb_used - 5)\n        cost = 20.0 + extra_gb * 3.0\n    if cost > 50.0:\n        cost = 50.0\n    return {'status': 'ok', 'cost': cost}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "data_plan",
+    "variant": "included_6gb",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 17.9
+  },
+  {
+    "n_pass": 11,
+    "n_fail": 1,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_just_over_base_rounds_up",
+        "verdict": "spec_conflict",
+        "args": "5.01",
+        "spec_value": {
+          "status": "ok",
+          "cost": 23.0
+        },
+        "reason": "passes, but the test expects cost=24.0 while the spec-derived reference returns cost=23.0"
+      },
+      {
+        "test": "test_one_extra_gb",
+        "verdict": "spec_conflict",
+        "args": "6",
+        "spec_value": {
+          "status": "ok",
+          "cost": 23.0
+        },
+        "reason": "passes, but the test expects cost=24.0 while the spec-derived reference returns cost=23.0"
+      },
+      {
+        "test": "test_five_extra_gb",
+        "verdict": "spec_conflict",
+        "args": "10",
+        "spec_value": {
+          "status": "ok",
+          "cost": 35.0
+        },
+        "reason": "passes, but the test expects cost=40.0 while the spec-derived reference returns cost=35.0"
+      },
+      {
+        "test": "test_cost_before_cap",
+        "verdict": "spec_conflict",
+        "args": "12",
+        "spec_value": {
+          "status": "ok",
+          "cost": 41.0
+        },
+        "reason": "passes, but the test expects cost=48.0 while the spec-derived reference returns cost=41.0"
+      },
+      {
+        "test": "test_cost_at_cap",
+        "verdict": "spec_conflict",
+        "args": "13",
+        "spec_value": {
+          "status": "ok",
+          "cost": 44.0
+        },
+        "reason": "passes, but the test expects cost=50.0 while the spec-derived reference returns cost=44.0"
+      }
+    ],
+    "needs_review": 1,
+    "tests": "import pytest\nfrom target_module import data_plan_cost\n\ndef test_negative_usage_error():\n    result = data_plan_cost(-1)\n    assert result == {\"status\": \"error\", \"cost\": 0.0}\n\ndef test_negative_usage_large_error():\n    result = data_plan_cost(-100)\n    assert result == {\"status\": \"error\", \"cost\": 0.0}\n\ndef test_zero_usage_base_price():\n    result = data_plan_cost(0)\n    assert result == {\"status\": \"ok\", \"cost\": 20.0}\n\ndef test_exact_base_included():\n    result = data_plan_cost(5)\n    assert result == {\"status\": \"ok\", \"cost\": 20.0}\n\ndef test_just_over_base_rounds_up():\n    result = data_plan_cost(5.01)\n    assert result == {\"status\": \"ok\", \"cost\": 24.0}\n\ndef test_partial_gb_rounds_up():\n    result = data_plan_cost(6.1)\n    assert result == {\"status\": \"ok\", \"cost\": 24.0}\n\ndef test_one_extra_gb():\n    result = data_plan_cost(6)\n    assert result == {\"status\": \"ok\", \"cost\": 24.0}\n\ndef test_five_extra_gb():\n    result = data_plan_cost(10)\n    assert result == {\"status\": \"ok\", \"cost\": 40.0}\n\ndef test_cost_before_cap():\n    result = data_plan_cost(12)\n    assert result == {\"status\": \"ok\", \"cost\": 48.0}\n\ndef test_cost_at_cap():\n    result = data_plan_cost(13)\n    assert result == {\"status\": \"ok\", \"cost\": 50.0}\n\ndef test_cost_capped_above_limit():\n    result = data_plan_cost(20)\n    assert result == {\"status\": \"ok\", \"cost\": 50.0}\n\ndef test_large_usage_stays_capped():\n    result = data_plan_cost(1000)\n    assert result == {\"status\": \"ok\", \"cost\": 50.0}",
+    "reference": "import math\n\ndef data_plan_cost(gb_used):\n    if gb_used < 0:\n        return {'status': 'error', 'cost': 0}\n    if gb_used <= 5:\n        cost = 20.0\n    else:\n        extra_gb = math.ceil(gb_used - 5)\n        cost = 20.0 + extra_gb * 3.0\n    if cost > 50.0:\n        cost = 50.0\n    return {'status': 'ok', 'cost': cost}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "data_plan",
+    "variant": "rate_4",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 16.6
+  },
+  {
+    "n_pass": 8,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_7",
+        "verdict": "spec_conflict",
+        "args": "30",
+        "spec_value": {
+          "status": "ok",
+          "cost": 50.0
+        },
+        "reason": "passes, but the test expects cost=60.0 while the spec-derived reference returns cost=50.0"
+      },
+      {
+        "test": "test_case_8",
+        "verdict": "spec_conflict",
+        "args": "100",
+        "spec_value": {
+          "status": "ok",
+          "cost": 50.0
+        },
+        "reason": "passes, but the test expects cost=60.0 while the spec-derived reference returns cost=50.0"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import data_plan_cost\n\ndef test_case_1():\n    result = data_plan_cost(-1)\n    assert result == {\"status\": \"error\", \"cost\": 0.0}\n\ndef test_case_2():\n    result = data_plan_cost(0)\n    assert result == {\"status\": \"ok\", \"cost\": 20.0}\n\ndef test_case_3():\n    result = data_plan_cost(5)\n    assert result == {\"status\": \"ok\", \"cost\": 20.0}\n\ndef test_case_4():\n    result = data_plan_cost(5.1)\n    assert result == {\"status\": \"ok\", \"cost\": 23.0}\n\ndef test_case_5():\n    result = data_plan_cost(6)\n    assert result == {\"status\": \"ok\", \"cost\": 23.0}\n\ndef test_case_6():\n    result = data_plan_cost(10)\n    assert result == {\"status\": \"ok\", \"cost\": 20.0 + 3.0 * 5}\n\ndef test_case_7():\n    result = data_plan_cost(30)\n    assert result == {\"status\": \"ok\", \"cost\": 60.0}\n\ndef test_case_8():\n    result = data_plan_cost(100)\n    assert result == {\"status\": \"ok\", \"cost\": 60.0}",
+    "reference": "import math\n\ndef data_plan_cost(gb_used):\n    if gb_used < 0:\n        return {'status': 'error', 'cost': 0}\n    if gb_used <= 5:\n        cost = 20.0\n    else:\n        extra_gb = math.ceil(gb_used - 5)\n        cost = 20.0 + extra_gb * 3.0\n    if cost > 50.0:\n        cost = 50.0\n    return {'status': 'ok', 'cost': cost}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "data_plan",
+    "variant": "cap_60",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 14.8
+  },
+  {
+    "n_pass": 5,
+    "n_fail": 5,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import checkout_total\n\ndef test_case_1():\n    result = checkout_total(-5, 10, 0)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_2():\n    result = checkout_total(0, 10, 0)\n    assert result == {\"status\": \"ok\", \"total\": 0.0}\n\ndef test_case_3():\n    result = checkout_total(100, 10, 100)\n    assert result == {\"status\": \"ok\", \"total\": 97.2}\n\ndef test_case_4():\n    result = checkout_total(100, 10, 200)\n    assert result == {\"status\": \"ok\", \"total\": 108.0}\n\ndef test_case_5():\n    result = checkout_total(500, 10, 100)\n    assert result == {\"status\": \"ok\", \"total\": 486.0}\n\ndef test_case_6():\n    result = checkout_total(300, 20, 100)\n    assert result == {\"status\": \"ok\", \"total\": 283.8}\n\ndef test_case_7():\n    result = checkout_total(400, 10, 100)\n    assert result == {\"status\": \"ok\", \"total\": 405.0}\n\ndef test_case_8():\n    result = checkout_total(10.5, 50, 5)\n    assert result == {\"status\": \"ok\", \"total\": 9.0}\n\ndef test_case_9():\n    result = checkout_total(99.99, 15, 50)\n    assert result == {\"status\": \"ok\", \"total\": 93.59}\n\ndef test_case_10():\n    result = checkout_total(1000, 5, 1000)\n    assert result == {\"status\": \"ok\", \"total\": 1053.3}",
+    "reference": "def checkout_total(subtotal, coupon_percent, min_spend):\n    if subtotal < 0:\n        return {'status': 'error', 'total': 0}\n    discount = 0.0\n    if subtotal >= min_spend:\n        discount = subtotal * coupon_percent / 100.0\n        if discount > 25.0:\n            discount = 25.0\n    discounted_amount = subtotal - discount\n    total = discounted_amount * 1.08\n    total = round(total + 1e-9, 2)\n    return {'status': 'ok', 'total': total}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "checkout",
+    "variant": "clean",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 15.8
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import checkout_total\n\ndef test_negative_subtotal_error():\n    result = checkout_total(-10, 10, 50)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_no_coupon_below_min_spend():\n    result = checkout_total(40, 20, 50)\n    assert result == {\"status\": \"ok\", \"total\": round((40 - 0) * 1.08, 2)}\n\ndef test_coupon_applies_above_min_spend():\n    result = checkout_total(100, 10, 50)\n    discount = min(100 * 10 / 100, 25.0)\n    expected_total = round((100 - discount) * 1.08, 2)\n    assert result == {\"status\": \"ok\", \"total\": expected_total}\n\ndef test_coupon_capped_at_25():\n    result = checkout_total(500, 10, 100)\n    discount = min(500 * 10 / 100, 25.0)\n    expected_total = round((500 - discount) * 1.08, 2)\n    assert result == {\"status\": \"ok\", \"total\": expected_total}\n\ndef test_coupon_exact_min_spend_not_applied():\n    result = checkout_total(50, 20, 50)\n    assert result == {\"status\": \"ok\", \"total\": round(50 * 1.08, 2)}\n\ndef test_zero_subtotal():\n    result = checkout_total(0, 15, 0)\n    assert result == {\"status\": \"ok\", \"total\": 0.0}\n\ndef test_rounding_two_decimals():\n    result = checkout_total(33.33, 10, 0)\n    discount = min(33.33 * 10 / 100, 25.0)\n    expected_total = round((33.33 - discount) * 1.08, 2)\n    assert result == {\"status\": \"ok\", \"total\": expected_total}",
+    "reference": "def checkout_total(subtotal, coupon_percent, min_spend):\n    if subtotal < 0:\n        return {'status': 'error', 'total': 0}\n    discount = 0.0\n    if subtotal >= min_spend:\n        discount = subtotal * coupon_percent / 100.0\n        if discount > 25.0:\n            discount = 25.0\n    discounted_amount = subtotal - discount\n    total = discounted_amount * 1.08\n    total = round(total + 1e-9, 2)\n    return {'status': 'ok', 'total': total}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "checkout",
+    "variant": "min_spend_exclusive",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 15.6
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 3,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_9",
+        "verdict": "spec_conflict",
+        "args": "50, 100, 50",
+        "spec_value": {
+          "status": "ok",
+          "total": 27.0
+        },
+        "reason": "passes, but the test expects total=21.6 while the spec-derived reference returns total=27.0"
+      }
+    ],
+    "needs_review": 2,
+    "tests": "import pytest\nfrom target_module import checkout_total\n\ndef test_case_1():\n    result = checkout_total(-5, 10, 0)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_case_2():\n    result = checkout_total(0, 10, 0)\n    assert result == {\"status\": \"ok\", \"total\": 0.0}\n\ndef test_case_3():\n    result = checkout_total(100, 10, 100)\n    assert result == {\"status\": \"ok\", \"total\": 97.2}\n\ndef test_case_4():\n    result = checkout_total(100, 10, 101)\n    assert result == {\"status\": \"ok\", \"total\": 108.0}\n\ndef test_case_5():\n    result = checkout_total(500, 20, 100)\n    assert result == {\"status\": \"ok\", \"total\": 486.0}\n\ndef test_case_6():\n    result = checkout_total(200, 50, 100)\n    assert result == {\"status\": \"ok\", \"total\": 184.68}\n\ndef test_case_7():\n    result = checkout_total(10, 0, 0)\n    assert result == {\"status\": \"ok\", \"total\": 10.8}\n\ndef test_case_8():\n    result = checkout_total(123.45, 10, 100)\n    assert result == {\"status\": \"ok\", \"total\": 120.0}\n\ndef test_case_9():\n    result = checkout_total(50, 100, 50)\n    assert result == {\"status\": \"ok\", \"total\": 21.6}\n\ndef test_case_10():\n    result = checkout_total(1.005, 0, 0)\n    assert result == {\"status\": \"ok\", \"total\": 1.09}",
+    "reference": "def checkout_total(subtotal, coupon_percent, min_spend):\n    if subtotal < 0:\n        return {'status': 'error', 'total': 0}\n    discount = 0.0\n    if subtotal >= min_spend:\n        discount = subtotal * coupon_percent / 100.0\n        if discount > 25.0:\n            discount = 25.0\n    discounted_amount = subtotal - discount\n    total = discounted_amount * 1.08\n    total = round(total + 1e-9, 2)\n    return {'status': 'ok', 'total': total}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "checkout",
+    "variant": "discount_cap_30",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 16.6
+  },
+  {
+    "n_pass": 7,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import checkout_total\n\ndef test_negative_subtotal():\n    result = checkout_total(-10, 10, 50)\n    assert result == {\"status\": \"error\", \"total\": 0.0}\n\ndef test_no_coupon_below_min_spend():\n    result = checkout_total(40, 20, 50)\n    assert result == {\"status\": \"ok\", \"total\": round(40 * 1.08 - 0, 2)}\n\ndef test_coupon_applies_at_min_spend():\n    result = checkout_total(100, 10, 100)\n    discount = min(100 * 10 / 100, 25.0)\n    expected = round(100 * 1.08 - discount, 2)\n    assert result == {\"status\": \"ok\", \"total\": expected}\n\ndef test_coupon_discount_capped():\n    result = checkout_total(500, 10, 100)\n    discount = min(500 * 10 / 100, 25.0)\n    expected = round(500 * 1.08 - discount, 2)\n    assert result == {\"status\": \"ok\", \"total\": expected}\n\ndef test_coupon_discount_not_capped():\n    result = checkout_total(100, 20, 50)\n    discount = min(100 * 20 / 100, 25.0)\n    expected = round(100 * 1.08 - discount, 2)\n    assert result == {\"status\": \"ok\", \"total\": expected}\n\ndef test_zero_subtotal():\n    result = checkout_total(0, 10, 0)\n    discount = min(0 * 10 / 100, 25.0)\n    expected = round(0 * 1.08 - discount, 2)\n    assert result == {\"status\": \"ok\", \"total\": expected}\n\ndef test_rounding():\n    result = checkout_total(33.333, 5, 0)\n    discount = min(33.333 * 5 / 100, 25.0)\n    expected = round(33.333 * 1.08 - discount, 2)\n    assert result == {\"status\": \"ok\", \"total\": expected}",
+    "reference": "def checkout_total(subtotal, coupon_percent, min_spend):\n    if subtotal < 0:\n        return {'status': 'error', 'total': 0}\n    discount = 0.0\n    if subtotal >= min_spend:\n        discount = subtotal * coupon_percent / 100.0\n        if discount > 25.0:\n            discount = 25.0\n    discounted_amount = subtotal - discount\n    total = discounted_amount * 1.08\n    total = round(total + 1e-9, 2)\n    return {'status': 'ok', 'total': total}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "checkout",
+    "variant": "tax_before_discount",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 15.9
+  },
+  {
+    "n_pass": 10,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import loyalty_points\n\ndef test_case_1():\n    result = loyalty_points(-1)\n    assert result == {\"status\": \"error\", \"points\": 0}\n\ndef test_case_2():\n    result = loyalty_points(0)\n    assert result == {\"status\": \"ok\", \"points\": 0}\n\ndef test_case_3():\n    result = loyalty_points(9.9)\n    assert result == {\"status\": \"ok\", \"points\": 0}\n\ndef test_case_4():\n    result = loyalty_points(10)\n    assert result == {\"status\": \"ok\", \"points\": 1}\n\ndef test_case_5():\n    result = loyalty_points(500)\n    assert result == {\"status\": \"ok\", \"points\": 50}\n\ndef test_case_6():\n    result = loyalty_points(510)\n    assert result == {\"status\": \"ok\", \"points\": 52}\n\ndef test_case_7():\n    result = loyalty_points(999.9)\n    assert result == {\"status\": \"ok\", \"points\": 50 + 2*49}\n\ndef test_case_8():\n    result = loyalty_points(1000)\n    assert result == {\"status\": \"ok\", \"points\": 50 + 2*50 + 50}\n\ndef test_case_9():\n    result = loyalty_points(1010)\n    assert result == {\"status\": \"ok\", \"points\": 50 + 2*51 + 50}\n\ndef test_case_10():\n    result = loyalty_points(1500)\n    assert result == {\"status\": \"ok\", \"points\": 50 + 2*100 + 50}",
+    "reference": "def loyalty_points(spend):\n    if spend < 0:\n        return {'status': 'error', 'points': 0}\n    first_part = min(spend, 500.0)\n    points_first = int(first_part // 10.0) * 1\n    over = max(0.0, spend - 500.0)\n    points_over = int(over // 10.0) * 2\n    points = points_first + points_over\n    if spend >= 1000.0:\n        points += 50\n    return {'status': 'ok', 'points': points}",
+    "targeted_raw": false,
+    "targeted": false,
+    "error": null,
+    "case": "loyalty",
+    "variant": "clean",
+    "rep": 0,
+    "numeric": true,
+    "flagged": false,
+    "seconds": 12.6
+  },
+  {
+    "n_pass": 10,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_7",
+        "verdict": "spec_conflict",
+        "args": "1000",
+        "spec_value": {
+          "status": "ok",
+          "points": 200
+        },
+        "reason": "passes, but the test expects points=150 while the spec-derived reference returns points=200"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import loyalty_points\n\ndef test_case_1():\n    result = loyalty_points(-1)\n    assert result == {\"status\": \"error\", \"points\": 0}\n\ndef test_case_2():\n    result = loyalty_points(0)\n    assert result == {\"status\": \"ok\", \"points\": 0}\n\ndef test_case_3():\n    result = loyalty_points(9.9)\n    assert result == {\"status\": \"ok\", \"points\": 0}\n\ndef test_case_4():\n    result = loyalty_points(10)\n    assert result == {\"status\": \"ok\", \"points\": 1}\n\ndef test_case_5():\n    result = loyalty_points(500)\n    assert result == {\"status\": \"ok\", \"points\": 50}\n\ndef test_case_6():\n    result = loyalty_points(510)\n    assert result == {\"status\": \"ok\", \"points\": 52}\n\ndef test_case_7():\n    result = loyalty_points(1000)\n    assert result == {\"status\": \"ok\", \"points\": 150}\n\ndef test_case_8():\n    result = loyalty_points(1000.1)\n    assert result == {\"status\": \"ok\", \"points\": 200}\n\ndef test_case_9():\n    result = loyalty_points(2000)\n    assert result == {\"status\": \"ok\", \"points\": 50 + 150*2 + 50}\n\ndef test_case_10():\n    result = loyalty_points(-0.01)\n    assert result == {\"status\": \"error\", \"points\": 0}",
+    "reference": "def loyalty_points(spend):\n    if spend < 0:\n        return {'status': 'error', 'points': 0}\n    first_part = min(spend, 500.0)\n    points_first = int(first_part // 10.0) * 1\n    over = max(0.0, spend - 500.0)\n    points_over = int(over // 10.0) * 2\n    points = points_first + points_over\n    if spend >= 1000.0:\n        points += 50\n    return {'status': 'ok', 'points': points}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "loyalty",
+    "variant": "bonus_exclusive",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 14.1
+  },
+  {
+    "n_pass": 8,
+    "n_fail": 2,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_case_5",
+        "verdict": "spec_conflict",
+        "args": "510",
+        "spec_value": {
+          "status": "ok",
+          "points": 52
+        },
+        "reason": "passes, but the test expects points=53 while the spec-derived reference returns points=52"
+      },
+      {
+        "test": "test_case_6",
+        "verdict": "spec_conflict",
+        "args": "1000",
+        "spec_value": {
+          "status": "ok",
+          "points": 200
+        },
+        "reason": "passes, but the test expects points=250 while the spec-derived reference returns points=200"
+      },
+      {
+        "test": "test_case_7",
+        "verdict": "spec_conflict",
+        "args": "1005",
+        "spec_value": {
+          "status": "ok",
+          "points": 200
+        },
+        "reason": "passes, but the test expects points=250 while the spec-derived reference returns points=200"
+      },
+      {
+        "test": "test_case_9",
+        "verdict": "spec_conflict",
+        "args": "999",
+        "spec_value": {
+          "status": "ok",
+          "points": 148
+        },
+        "reason": "passes, but the test expects points=197 while the spec-derived reference returns points=148"
+      }
+    ],
+    "needs_review": 2,
+    "tests": "import pytest\nfrom target_module import loyalty_points\n\ndef test_case_1():\n    result = loyalty_points(-1)\n    assert result == {\"status\": \"error\", \"points\": 0}\n\ndef test_case_2():\n    result = loyalty_points(0)\n    assert result == {\"status\": \"ok\", \"points\": 0}\n\ndef test_case_3():\n    result = loyalty_points(10)\n    assert result == {\"status\": \"ok\", \"points\": 1}\n\ndef test_case_4():\n    result = loyalty_points(500)\n    assert result == {\"status\": \"ok\", \"points\": 50}\n\ndef test_case_5():\n    result = loyalty_points(510)\n    assert result == {\"status\": \"ok\", \"points\": 53}\n\ndef test_case_6():\n    result = loyalty_points(1000)\n    assert result == {\"status\": \"ok\", \"points\": 250}\n\ndef test_case_7():\n    result = loyalty_points(1005)\n    assert result == {\"status\": \"ok\", \"points\": 250}\n\ndef test_case_8():\n    result = loyalty_points(600)\n    assert result == {\"status\": \"ok\", \"points\": 110}\n\ndef test_case_9():\n    result = loyalty_points(999)\n    assert result == {\"status\": \"ok\", \"points\": 197}\n\ndef test_case_10():\n    result = loyalty_points(2000)\n    assert result == {\"status\": \"ok\", \"points\": 700}",
+    "reference": "def loyalty_points(spend):\n    if spend < 0:\n        return {'status': 'error', 'points': 0}\n    first_part = min(spend, 500.0)\n    points_first = int(first_part // 10.0) * 1\n    over = max(0.0, spend - 500.0)\n    points_over = int(over // 10.0) * 2\n    points = points_first + points_over\n    if spend >= 1000.0:\n        points += 50\n    return {'status': 'ok', 'points': points}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "loyalty",
+    "variant": "double_becomes_triple",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 16.9
+  },
+  {
+    "n_pass": 12,
+    "n_fail": 0,
+    "reference_ok": true,
+    "bug_flags": [
+      {
+        "test": "test_base_capped_at_400",
+        "verdict": "spec_conflict",
+        "args": "450",
+        "spec_value": {
+          "status": "ok",
+          "points": 45
+        },
+        "reason": "passes, but the test expects points=40 while the spec-derived reference returns points=45"
+      },
+      {
+        "test": "test_at_500_no_extra",
+        "verdict": "spec_conflict",
+        "args": "500",
+        "spec_value": {
+          "status": "ok",
+          "points": 50
+        },
+        "reason": "passes, but the test expects points=40 while the spec-derived reference returns points=50"
+      },
+      {
+        "test": "test_just_above_500",
+        "verdict": "spec_conflict",
+        "args": "510",
+        "spec_value": {
+          "status": "ok",
+          "points": 52
+        },
+        "reason": "passes, but the test expects points=42 while the spec-derived reference returns points=52"
+      }
+    ],
+    "needs_review": 0,
+    "tests": "import pytest\nfrom target_module import loyalty_points\n\ndef test_negative_spend():\n    result = loyalty_points(-1)\n    assert result == {\"status\": \"error\", \"points\": 0}\n\ndef test_zero_spend():\n    result = loyalty_points(0)\n    assert result == {\"status\": \"ok\", \"points\": 0}\n\ndef test_below_first_ten():\n    result = loyalty_points(9.9)\n    assert result == {\"status\": \"ok\", \"points\": 0}\n\ndef test_first_ten():\n    result = loyalty_points(10)\n    assert result == {\"status\": \"ok\", \"points\": 1}\n\ndef test_base_up_to_400():\n    result = loyalty_points(400)\n    assert result == {\"status\": \"ok\", \"points\": 40}\n\ndef test_base_capped_at_400():\n    result = loyalty_points(450)\n    assert result == {\"status\": \"ok\", \"points\": 40}\n\ndef test_at_500_no_extra():\n    result = loyalty_points(500)\n    assert result == {\"status\": \"ok\", \"points\": 40}\n\ndef test_just_above_500():\n    result = loyalty_points(510)\n    assert result == {\"status\": \"ok\", \"points\": 42}\n\ndef test_extra_points_scaling():\n    result = loyalty_points(600)\n    assert result == {\"status\": \"ok\", \"points\": 40 + 2*10}\n\ndef test_bonus_at_1000():\n    result = loyalty_points(1000)\n    assert result == {\"status\": \"ok\", \"points\": 40 + 100 + 50}\n\ndef test_bonus_above_1000():\n    result = loyalty_points(1010)\n    assert result == {\"status\": \"ok\", \"points\": 40 + 102 + 50}\n\ndef test_large_spend():\n    result = loyalty_points(2000)\n    assert result == {\"status\": \"ok\", \"points\": 40 + 300 + 50}",
+    "reference": "def loyalty_points(spend):\n    if spend < 0:\n        return {'status': 'error', 'points': 0}\n    first_part = min(spend, 500.0)\n    points_first = int(first_part // 10.0) * 1\n    over = max(0.0, spend - 500.0)\n    points_over = int(over // 10.0) * 2\n    points = points_first + points_over\n    if spend >= 1000.0:\n        points += 50\n    return {'status': 'ok', 'points': points}",
+    "targeted_raw": true,
+    "targeted": true,
+    "error": null,
+    "case": "loyalty",
+    "variant": "first_tier_400",
+    "rep": 0,
+    "numeric": true,
+    "flagged": true,
+    "seconds": 16.4
+  }
+]
